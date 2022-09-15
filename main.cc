@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include "bits/stdc++.h"
 
 using namespace std;
 
@@ -148,7 +148,8 @@ public:
         }
 
         // D3 Condensar arbol
-        condensar(obj);
+        deque<R_Nodo*> nodos_eliminados;
+        condensar(obj, nodos_eliminados);
 
         // D4 verificar si raiz tiene solo un hijo
         if (!root->hoja && root->llaves_MBR_hijo.size() == 1)
@@ -159,13 +160,13 @@ public:
     }
 
 private:
-    void condensar(R_Nodo *&nodo, deque<R_Nodo *> nodos_eliminados = {})
+    void condensar(R_Nodo *&nodo, deque<R_Nodo *> &nodos_eliminados)
     {
         // CT2 verificar que no sea raiz
         if (nodo != root)
         {
             // CT3 eliminar el nodo si tiene menos de m entradas
-            if (nodo->llaves_tupla.size() < m)
+            if (nodo->llaves_tupla.size() < m && nodo->llaves_MBR_hijo.size() < m)
             {
 
                 nodos_eliminados.push_front(nodo);
@@ -485,31 +486,6 @@ private:
 int main()
 {
     R_Tree arbolito;
-    /* arbolito.insercion({-15,7});
-    arbolito.insercion({0,5});
-    arbolito.insercion({-13,1});
-    arbolito.insercion({-2,1});
-    arbolito.insercion({8,8});
-    arbolito.insercion({11,-4});
-    arbolito.insercion({5,-1});
-    arbolito.insercion({16,-9});
-    arbolito.insercion({-16,2});
-    arbolito.insercion({8,7});
-    arbolito.insercion({0,9});
-    arbolito.insercion({-2,6});
-    arbolito.insercion({-6,3});
-    arbolito.insercion({7,-3});
-    arbolito.insercion({-4,4});
-    arbolito.insercion({15,5});
-    arbolito.insercion({-8,-7});
-    arbolito.insercion({14,-3});
-    arbolito.insercion({4,1});
-    arbolito.insercion({-19,8});
-    arbolito.insercion({-11,-1});
-    arbolito.insercion({-4,0});
-    arbolito.insercion({-6,3});
-    arbolito.insercion({-19,-8});
-    arbolito.insercion({-6,1}); */
 
     arbolito.insercion({3, -6});
     arbolito.insercion({16, 7});
@@ -519,25 +495,17 @@ int main()
     arbolito.insercion({-3, -3});
     arbolito.insercion({16, -1});
     arbolito.insercion({-3, 1});
-    arbolito.insercion({-7, -7});
-    arbolito.insercion({6, 8});
-    arbolito.insercion({-9, 0});
-    arbolito.insercion({16, 4});
-    arbolito.insercion({15, 3});
-    arbolito.insercion({16, 5});
-    arbolito.insercion({8, -3});
-    arbolito.insercion({-4, 0});
-    arbolito.insercion({-19, 4});
-    arbolito.insercion({-14, 8});
-    arbolito.insercion({11, -8});
-    arbolito.insercion({13, 7});
-    arbolito.insercion({-2, -5});
-    arbolito.insercion({2, 1});
-    arbolito.insercion({16, 3});
-    arbolito.insercion({5, 5});
-    arbolito.insercion({-1, -3});
+    arbolito.insercion({-7,-7});
+    arbolito.insercion({6,8});
+    arbolito.insercion({-9,0});
+    arbolito.insercion({16,4});
+    arbolito.insercion({15,3});
+    arbolito.insercion({16,5});
+    arbolito.insercion({8,-3});
+    arbolito.insercion({-4,0});
+    arbolito.insercion({-19,4});
 
-    arbolito.eliminacion({-2,-5});
+    arbolito.eliminacion({0,-3});
 
     arbolito.print_desmos();
     return 0;
