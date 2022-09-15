@@ -1,7 +1,7 @@
 compilar:
 	g++ main.cc -o main
 
-run:
+run: compilar
 	./main > desmos.txt
 
 clean:

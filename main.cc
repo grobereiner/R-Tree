@@ -160,7 +160,7 @@ public:
     }
 
 private:
-    void condensar(R_Nodo *&nodo, deque<R_Nodo *> &nodos_eliminados)
+    void condensar(R_Nodo *&nodo, deque<R_Nodo*> &nodos_eliminados)
     {
         // CT2 verificar que no sea raiz
         if (nodo != root)
@@ -178,11 +178,16 @@ private:
                     break;
                 }
 
+            }
+            else{
                 // CT4 reajustar los extremos del padre del nodo eliminado
-                for (int i = 0; i < nodo->padre->padre->llaves_MBR_hijo.size(); i++)
+                for (int i = 0; i < nodo->padre->llaves_MBR_hijo.size(); i++)
                 {
-                    if(nodo->padre->padre->llaves_MBR_hijo[i].second = nodo->padre){
-                        nodo->padre->padre->llaves_MBR_hijo[i].first.redimensionar_mbrs(nodo->padre->llaves_MBR_hijo);
+                    if(nodo->padre->llaves_MBR_hijo[i].second == nodo){
+                        if(nodo->hoja)
+                            nodo->padre->llaves_MBR_hijo[i].first.redimensionar_tuplas(nodo->llaves_tupla);
+                        else
+                            nodo->padre->llaves_MBR_hijo[i].first.redimensionar_mbrs(nodo->llaves_MBR_hijo);
                         break;
                     }
                 }
@@ -204,7 +209,8 @@ private:
         }
         else{
             for(auto i: nodo->llaves_MBR_hijo){
-                insertar_entradas(i.second);
+                ajustar_arbol(i.second->padre, nodo);
+                // insertar_entradas(i.second);
             }
         }
     }
@@ -506,6 +512,8 @@ int main()
     arbolito.insercion({-19,4});
 
     arbolito.eliminacion({0,-3});
+    arbolito.eliminacion({-3,-3});
+    arbolito.eliminacion({3,-6});
 
     arbolito.print_desmos();
     return 0;
