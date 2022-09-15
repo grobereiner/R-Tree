@@ -537,6 +537,8 @@ int main()
     arbolito.insercion({5, 5});
     arbolito.insercion({-1, -3});
 
+    arbolito.eliminacion({-2,-5});
+
     arbolito.print_desmos();
     return 0;
 }
