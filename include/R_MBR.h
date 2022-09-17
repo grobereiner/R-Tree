@@ -1,12 +1,15 @@
 #ifndef R_MBR_H
 #define R_MBR_H
 
-#include<vector>
-#include<utility>
-#include<cstdlib>
-#include"R_Nodo.h"
+#include <vector>
+#include <utility>
+#include <cstdlib>
+#include "R_Nodo.h"
 
 using namespace std;
+
+struct R_MBR;
+struct R_Nodo;
 
 struct R_MBR
 {

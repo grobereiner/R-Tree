@@ -1,6 +1,4 @@
-#include"../include/R_MBR.h"
-
-using namespace std;
+#include "../include/R_MBR.h"
 
 R_MBR::R_MBR(vector<pair<int, int>> tuplas)
 {
