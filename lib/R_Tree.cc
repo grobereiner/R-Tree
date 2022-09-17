@@ -166,8 +166,11 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
     if (nodo->hoja)
     {
         for (auto i : nodo->llaves_tupla){
-            sf::Vertex punto(sf::Vector2f(i.first, ventana.getSize().y - i.second), sf::Color::Red);
-            ventana.draw(&punto, 1, sf::Points);
+            sf::CircleShape coordenada;
+            coordenada.setRadius(4);
+            coordenada.setFillColor(sf::Color::Red);
+            coordenada.setPosition(i.first - 2, ventana.getSize().y - i.second - 2);
+            ventana.draw(coordenada);
         }
     }
     else
