@@ -1,7 +1,7 @@
 CXX = g++
 
 main: main.o R_MBR.o R_Nodo.o R_Tree.o
-	$(CXX) -o bin/debug/main bin/out/main.o bin/out/R_MBR.o bin/out/R_Nodo.o bin/out/R_Tree.o
+	$(CXX) bin/out/*.o -o bin/debug/main -lsfml-graphics -lsfml-window -lsfml-system
 
 R_MBR.o:
 	$(CXX) -o bin/out/R_MBR.o -c lib/R_MBR.cc
@@ -16,7 +16,7 @@ main.o:
 	$(CXX) -o bin/out/main.o -c src/main.cc
 
 run: display main
-	./bin/debug/main > desmos.txt
+	./bin/debug/main
 
 clean:
 	rm bin/debug/*
@@ -24,4 +24,4 @@ clean:
 	rm *.txt 
 
 display: 
-	. commands/display.zsh
+	export DISPLAY=$(route.exe print | grep 0.0.0.0 | head -1 | awk '{print $4}'):0.0

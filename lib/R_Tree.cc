@@ -1,12 +1,19 @@
 #include "../include/R_Tree.h"
 
 R_Tree::R_Tree() : root(new R_Nodo(true)) { root->padre = nullptr; }
+
 void R_Tree::print_desmos()
 {
     int tupla_id = 0;
     print_desmos(root, tupla_id);
     cout << '\n';
 }
+
+void R_Tree::print_sfml(sf::RenderWindow &ventana)
+{
+    print_sfml(root, ventana);
+}
+
 void R_Tree::insercion(pair<int, int> llave_tupla)
 {
     // I1
@@ -20,6 +27,7 @@ void R_Tree::insercion(pair<int, int> llave_tupla)
     // I3
     ajustar_arbol(objetivo, nuevo_nodo);
 }
+
 void R_Tree::eliminacion(pair<int, int> llave_tupla)
 {
     // D1 encontrar la hoja que lo contiene
@@ -134,6 +142,7 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, pair<int, int> llave_tupla)
     }
     return nullptr;
 }
+
 void R_Tree::print_desmos(R_Nodo *nodo, int &tupla_id)
 {
 
@@ -151,7 +160,36 @@ void R_Tree::print_desmos(R_Nodo *nodo, int &tupla_id)
         }
     }
 }
+
+void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
+{
+    if (nodo->hoja)
+    {
+        for (auto i : nodo->llaves_tupla){
+            sf::Vertex punto(sf::Vector2f(i.first, ventana.getSize().y - i.second), sf::Color::Red);
+            ventana.draw(&punto, 1, sf::Points);
+        }
+    }
+    else
+    {
+        for (auto i : nodo->llaves_MBR_hijo)
+        {
+            int dx = i.first.extremos[1].first - i.first.extremos[0].first;
+            int dy = i.first.extremos[0].second - i.first.extremos[1].second;
+            sf::RectangleShape rectangulo(sf::Vector2f(dx, dy));
+            rectangulo.setOutlineColor(sf::Color::White);
+            rectangulo.setOutlineThickness(2);
+            rectangulo.setPosition(i.first.extremos[0].first, ventana.getSize().y - i.first.extremos[0].second);
+            rectangulo.setFillColor(sf::Color::Transparent);
+
+            ventana.draw(rectangulo);
+            print_sfml(i.second, ventana);
+        }
+    }
+}
+
 bool R_Tree::comparar_x_tupla(pair<int, int> a, pair<int, int> b) { return a.first < b.first; }
+
 bool R_Tree::comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
 {
     if (a.first.extremos[0].first < b.first.extremos[0].first)
@@ -161,6 +199,7 @@ bool R_Tree::comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
     return false;
 }
 bool R_Tree::comparar_y_tupla(pair<int, int> a, pair<int, int> b) { return a.second < b.second; }
+
 bool R_Tree::comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
 {
     if (a.first.extremos[1].second < b.first.extremos[1].second)
