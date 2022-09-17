@@ -1,10 +1,12 @@
 #include "../include/R_Tree.h"
 #include<SFML/Graphics.hpp>
+#include<utility>
+#include<iostream>
 
 int main()
 {
     R_Tree arbolito;
-    arbolito.insercion({114,371});
+    // arbolito.insercion({114,371});
     // arbolito.insercion({572,34});
     // arbolito.insercion({253,10});
     // arbolito.insercion({117,159});
@@ -34,22 +36,46 @@ int main()
     // arbolito.eliminacion({-3,-3});
     // arbolito.eliminacion({3,-6});
 
-    const int width = 600, height = 600;
-    cout<<"definicon de variables"<<endl;
-    int x, y;
+    const int width_canvas = 600, height_canvas = 600;
+    const int width_ext = 300;
 
-    sf::RenderWindow window(sf::VideoMode(width, height), "R-TREE");
+    sf::RenderWindow window(sf::VideoMode(width_canvas + width_ext, height_canvas), "R-TREE");
     while (window.isOpen())
     {
-        // cin>>x>>y;
-        cout<<"DSILANOANO"<<endl;
+        /*pair<int, int> coordenada;
+        cin>>coordenada.first>>coordenada.second;
+        cout<<"INSERCION: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
+        arbolito.insercion(coordenada); */
 
-        // arbolito.insercion({x, y});
+
 
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if(event.type == sf::Event::MouseButtonPressed){
+
+                if (event.mouseButton.button == sf::Mouse::Left){
+                    sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+                    pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
+
+                    if(coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas){
+                        cout<<"INSERCION: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
+                        arbolito.insercion(coordenada);
+                    }
+
+                }
+                
+            }
+            else if(event.type == sf::Event::KeyReleased){
+                cout<<"INGERSAR COORDENADAS A ELIMINAR: ";
+                pair<int, int> coordenada;
+                cin>>coordenada.first>>coordenada.second;
+                if(coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas){
+                    cout<<"INTENTAR ELIMINAR: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
+                    arbolito.eliminacion(coordenada);
+                }
+            }
+            else if (event.type == sf::Event::Closed)
                 window.close();
         }
 
