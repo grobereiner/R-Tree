@@ -15,9 +15,13 @@ R_Tree.o:
 main.o:
 	$(CXX) -o bin/out/main.o -c src/main.cc
 
-run: 
+run: display main
 	./bin/debug/main > desmos.txt
 
 clean:
-	rm *.txt main
+	rm bin/debug/*
+	rm bin/out/* 
+	rm *.txt 
 
+display: 
+	. commands/display.zsh
