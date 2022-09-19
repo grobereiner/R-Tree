@@ -1,7 +1,7 @@
 #include "../include/R_Tree.h"
-#include<SFML/Graphics.hpp>
-#include<utility>
-#include<iostream>
+#include <SFML/Graphics.hpp>
+#include <utility>
+#include <iostream>
 
 int main()
 {
@@ -47,35 +47,44 @@ int main()
         cout<<"INSERCION: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
         arbolito.insercion(coordenada); */
 
-
-
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if(event.type == sf::Event::MouseButtonPressed){
+            // if(event.mouseButton.button == sf::Mouse::Left){
+            //     sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+            //     pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
+            //     if(coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas){
+            //         cout<<"INSERCION: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
+            //         arbolito.insercion(coordenada);
+            //     }
+            // }
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
 
-                if (event.mouseButton.button == sf::Mouse::Left){
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
                     sf::Vector2i localPosition = sf::Mouse::getPosition(window);
                     pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
 
-                    if(coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas){
-                        cout<<"INSERCION: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
+                    if (coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas)
+                    {
+                        cout << "INSERCION: " << coordenada.first << '\t' << coordenada.second << endl;
                         arbolito.insercion(coordenada);
                     }
-
                 }
-                
             }
-            else if(event.type == sf::Event::KeyReleased){
-                cout<<"INGERSAR COORDENADAS A ELIMINAR: ";
+            if (event.type == sf::Event::KeyPressed)
+            {
+                cout << "INGRESAR COORDENADAS A ELIMINAR: ";
                 pair<int, int> coordenada;
-                cin>>coordenada.first>>coordenada.second;
-                if(coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas){
-                    cout<<"INTENTAR ELIMINAR: "<<coordenada.first<<'\t'<<coordenada.second<<endl;
+                cin >> coordenada.first >> coordenada.second;
+                if (coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas)
+                {
+                    cout << "INTENTAR ELIMINAR: " << coordenada.first << '\t' << coordenada.second << endl;
                     arbolito.eliminacion(coordenada);
                 }
             }
-            else if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed)
                 window.close();
         }
 
@@ -83,8 +92,6 @@ int main()
         arbolito.print_sfml(window);
         window.display();
     }
-
-
 
     return 0;
 }
