@@ -1,8 +1,9 @@
 #include "../include/Interfaz.h"
 
 Interfaz::Interfaz(int wc, int hc, int we)
-    : width_canvas(wc), height_canvas(hc), width_ext(we), window(sf::VideoMode(width_canvas + width_ext, height_canvas), "R-TREE")
+    : width_canvas(wc), height_canvas(hc), width_ext(we)
 {
+    window.create(sf::VideoMode(width_canvas + width_ext, height_canvas), "R-TREE");
 }
 
 bool Interfaz::inside_canvas(pair<int, int> coordenada){
