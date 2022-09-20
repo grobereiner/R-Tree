@@ -175,10 +175,12 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
                 coordenada.setPosition(i.info_tupla.first - 2, ventana.getSize().y - i.info_tupla.second - 2);
                 ventana.draw(coordenada);
             }
-            else{
+            else
+            {
                 sf::ConvexShape convex;
                 convex.setPointCount(i.info_poligono.tuplas.size());
-                for(int j = 0; j<i.info_poligono.tuplas.size(); j++){
+                for (int j = 0; j < i.info_poligono.tuplas.size(); j++)
+                {
                     convex.setPoint(j, sf::Vector2f(i.info_poligono.tuplas[j].first, ventana.getSize().y - i.info_poligono.tuplas[j].second));
                 }
                 convex.setFillColor(sf::Color::Blue);
@@ -228,7 +230,6 @@ bool R_Tree::comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
 
 R_Nodo *R_Tree::partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno)
 {
-    // int cota_inferior = ceil(0.4 * m), cota_superior = M - ceil(0.4 * m);
     int cota_inferior = ceil(0.4 * m), cota_superior = M - ceil(0.4 * m);
     vector<pair<R_MBR, R_Nodo *>> almacen{nodo->llaves_MBR_hijo};
 
@@ -278,7 +279,6 @@ R_Nodo *R_Tree::partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno)
 
 R_Nodo *R_Tree::partir_nodo_tuplas(R_Nodo *&nodo, R_Info llave_tupla)
 {
-    // int cota_inferior = ceil(0.4 * m), cota_superior = M - ceil(0.4 * m);
     int cota_inferior = m, cota_superior = M - m;
     vector<R_Info> almacen{nodo->llaves_tupla};
     almacen.push_back(llave_tupla);
@@ -424,15 +424,6 @@ void R_Tree::ajustar_arbol(R_Nodo *&objetivo, R_Nodo *nuevo_nodo)
             {
                 nuevo_nodo->padre = objetivo->padre;
                 R_Nodo *particion_padre = partir_nodo_mbrs(objetivo->padre, nuevo_nodo);
-
-                /*i = 0;
-                while(objetivo->padre->llaves_MBR_hijo[i].second != objetivo)
-                    i++;
-                if(objetivo->hoja)
-                    objetivo->padre->llaves_MBR_hijo[i].first.redimensionar_tuplas(objetivo->llaves_tupla);
-                else
-                    objetivo->padre->llaves_MBR_hijo[i].first.redimensionar_mbrs(objetivo->llaves_MBR_hijo);*/
-
                 ajustar_arbol(objetivo->padre, particion_padre);
             }
         }

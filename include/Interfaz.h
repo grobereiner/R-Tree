@@ -15,11 +15,13 @@ public:
     void ejecutar();
 protected:
     void eventos();
-    void ingresar_coordenada();
-    void ingresar_poligono();
-    void eliminar();
+    void ingresar_coordenada(sf::Event& event);
+    void ingresar_poligono(sf::Event& event);
+    void eliminar(sf::Event& event);
 private:
     bool inside_canvas(pair<int, int> coordenada);
+    void eliminar_coordenada(sf::Event& event);
+    void eliminar_poligono(sf::Event& event);
 
     R_Tree arbolito;
     sf::RenderWindow window;
