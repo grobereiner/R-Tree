@@ -179,9 +179,9 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
                 sf::ConvexShape convex;
                 convex.setPointCount(i.info_poligono.tuplas.size());
                 for(int j = 0; j<i.info_poligono.tuplas.size(); j++){
-                    convex.setPoint(j, sf::Vector2f(i.info_poligono.tuplas[j].first, i.info_poligono.tuplas[j].second));
+                    convex.setPoint(j, sf::Vector2f(i.info_poligono.tuplas[j].first, ventana.getSize().y - i.info_poligono.tuplas[j].second));
                 }
-                convex.setPosition(i.info_poligono.extremos[0].first, ventana.getSize().y - i.info_poligono.extremos[0].second);
+                convex.setFillColor(sf::Color::Blue);
                 ventana.draw(convex);
             }
         }
