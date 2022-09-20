@@ -1,6 +1,7 @@
 #ifndef R_MBR_H
 #define R_MBR_H
 
+#include<algorithm>
 #include <vector>
 #include <utility>
 #include <cstdlib>
@@ -14,7 +15,7 @@ struct R_Nodo;
 struct R_MBR
 {
     R_MBR() = default;
-    R_MBR(vector<pair<int, int>> tuplas);
+    R_MBR(vector<R_Info> tuplas);
     R_MBR(vector<pair<R_MBR, R_Nodo *>> mbrs);
     /*
     extremo[0]  ->  *-----
@@ -26,10 +27,10 @@ struct R_MBR
     */
     pair<int, int> extremos[2];
     int agrandamiento(pair<int, int> tupla);
-    void redimensionar_tuplas(vector<pair<int, int>> tuplas);
+    void redimensionar_tuplas(vector<R_Info> tuplas);
 
     void redimensionar_mbrs(vector<pair<R_MBR, R_Nodo *>> mbrs);
-    bool dentro(pair<int, int> llave_tupla);
+    bool dentro(R_Info llave_tupla);
 };
 
 #endif

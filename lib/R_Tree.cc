@@ -106,7 +106,7 @@ void R_Tree::insertar_entradas(R_Nodo *nodo)
     {
         for (auto i : nodo->llaves_tupla)
         {
-            insercion(i);
+            insercion_info(i);
         }
     }
     else
@@ -119,7 +119,7 @@ void R_Tree::insertar_entradas(R_Nodo *nodo)
     }
 }
 
-R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, pair<int, int> llave_tupla)
+R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
 {
     if (nodo->hoja)
     {

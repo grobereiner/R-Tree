@@ -16,9 +16,13 @@ public:
     void print_desmos();
     void print_sfml(sf::RenderWindow &ventana);
     void insercion(pair<int, int> llave_tupla);
+    void insercion(vector<pair<int, int>> llave_tupla);
     void eliminacion(pair<int, int> llave_tupla);
+    void eliminacion(vector<pair<int, int>> llave_tupla);
 
 protected:
+    void insercion_info(R_Info llave_tupla);
+
     void condensar(R_Nodo *&nodo, deque<R_Nodo *> &nodos_eliminados);
 
     void insertar_entradas(R_Nodo *nodo);

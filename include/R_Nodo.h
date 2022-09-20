@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include "Constante.h"
 #include "R_MBR.h"
+#include "R_Info.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ struct R_Nodo
 
     R_Nodo *padre;
     // NODO HOJA
-    vector<pair<int, int>> llaves_tupla;
+    vector<R_Info> llaves_tupla;
     // NODO INTERNO
     vector<pair<R_MBR, R_Nodo *>> llaves_MBR_hijo;
     bool hoja;
