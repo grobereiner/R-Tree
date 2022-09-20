@@ -9,19 +9,19 @@ R_MBR::R_MBR(vector<pair<R_MBR, R_Nodo *>> mbrs)
     this->redimensionar_mbrs(mbrs);
 }
 
-int R_MBR::agrandamiento(pair<int, int> tupla)
+int R_MBR::agrandamiento(R_Info tupla)
 {
     pair<int, int> temp_extremos[2]{extremos[0], extremos[1]};
     // para x
-    if (tupla.first < temp_extremos[0].first && tupla.first < temp_extremos[1].first)
-        temp_extremos[0].first = tupla.first;
-    else if (tupla.first > temp_extremos[0].first && tupla.first > temp_extremos[1].first)
-        temp_extremos[1].first = tupla.first;
+    if (tupla.get_left() < temp_extremos[0].first && tupla.get_left() < temp_extremos[1].first)
+        temp_extremos[0].first = tupla.get_left();
+    else if (tupla.get_right() > temp_extremos[0].first && tupla.get_right() > temp_extremos[1].first)
+        temp_extremos[1].first = tupla.get_right();
     // para y
-    if (tupla.second < temp_extremos[0].second && tupla.second < temp_extremos[1].second)
-        temp_extremos[1].second = tupla.second;
-    else if (tupla.second > temp_extremos[0].second && tupla.second > temp_extremos[1].second)
-        temp_extremos[0].second = tupla.second;
+    if (tupla.get_down() < temp_extremos[0].second && tupla.get_down() < temp_extremos[1].second)
+        temp_extremos[1].second = tupla.get_down();
+    else if (tupla.get_up() > temp_extremos[0].second && tupla.get_up() > temp_extremos[1].second)
+        temp_extremos[0].second = tupla.get_up();
 
     int area = abs((extremos[0].first - extremos[1].first) * (extremos[0].second - extremos[1].second));
     int nueva_area = abs((temp_extremos[0].first - temp_extremos[1].first) * (temp_extremos[0].second - temp_extremos[1].second));
@@ -48,7 +48,8 @@ void R_MBR::redimensionar_tuplas(vector<R_Info> tuplas)
             extremos[1].second = min(extremos[1].second, i.info_tupla.second);
             extremos[0].second = max(extremos[0].second, i.info_tupla.second);
         }
-        else{
+        else
+        {
             extremos[0].first = min(extremos[0].first, i.info_poligono.extremos[0].first);
             extremos[1].first = max(i.info_poligono.extremos[1].first, extremos[1].first);
             extremos[1].second = min(i.info_poligono.extremos[1].second, extremos[1].second);

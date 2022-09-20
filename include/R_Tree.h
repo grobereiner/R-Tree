@@ -15,31 +15,27 @@ public:
     R_Tree();
     void print_desmos();
     void print_sfml(sf::RenderWindow &ventana);
-    void insercion(pair<int, int> llave_tupla);
-    void insercion(vector<pair<int, int>> llave_tupla);
-    void eliminacion(pair<int, int> llave_tupla);
-    void eliminacion(vector<pair<int, int>> llave_tupla);
+    void insercion(R_Info llave_tupla);
+    void eliminacion(R_Info llave_tupla);
 
 protected:
-    void insercion_info(R_Info llave_tupla);
-
     void condensar(R_Nodo *&nodo, deque<R_Nodo *> &nodos_eliminados);
 
     void insertar_entradas(R_Nodo *nodo);
 
-    R_Nodo *hallar_hoja(R_Nodo *nodo, pair<int, int> llave_tupla);
+    R_Nodo *hallar_hoja(R_Nodo *nodo, R_Info llave_tupla);
     void print_desmos(R_Nodo *nodo, int &tupla_id);
     void print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana);
-    static bool comparar_x_tupla(pair<int, int> a, pair<int, int> b);
+    static bool comparar_x_tupla(R_Info a, R_Info b);
     static bool comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
-    static bool comparar_y_tupla(pair<int, int> a, pair<int, int> b);
+    static bool comparar_y_tupla(R_Info a, R_Info b);
     static bool comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
 
     R_Nodo *partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno);
 
-    R_Nodo *partir_nodo_tuplas(R_Nodo *&nodo, pair<int, int> llave_tupla);
+    R_Nodo *partir_nodo_tuplas(R_Nodo *&nodo, R_Info llave_tupla);
 
-    R_Nodo *escoger_nodo(R_Nodo *nodo, pair<int, int> llave_tupla);
+    R_Nodo *escoger_nodo(R_Nodo *nodo, R_Info llave_tupla);
 
     void ajustar_arbol(R_Nodo *&objetivo, R_Nodo *nuevo_nodo);
 

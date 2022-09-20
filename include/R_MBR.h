@@ -26,7 +26,7 @@ struct R_MBR
                     -----*  <- extremo[1]
     */
     pair<int, int> extremos[2];
-    int agrandamiento(pair<int, int> tupla);
+    int agrandamiento(R_Info tupla);
     void redimensionar_tuplas(vector<R_Info> tuplas);
 
     void redimensionar_mbrs(vector<pair<R_MBR, R_Nodo *>> mbrs);

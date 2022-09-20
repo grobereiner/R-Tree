@@ -14,6 +14,10 @@ struct R_Info
 
     bool operator==(const R_Info &other);
     bool operator!=(const R_Info &other);
+    int get_left();
+    int get_right();
+    int get_up();
+    int get_down();
 
     pair<int, int> info_tupla;
     R_Poligono info_poligono;

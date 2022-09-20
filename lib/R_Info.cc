@@ -21,3 +21,31 @@ bool R_Info::operator==(const R_Info &other){
 bool R_Info::operator!=(const R_Info &other){
     return !(*this == other);
 }
+
+int R_Info::get_left(){
+    if(!poligono)
+        return info_tupla.first;
+    else
+        return info_poligono.extremos[0].first;
+}
+
+int R_Info::get_right(){
+    if(!poligono)
+        return info_tupla.first;
+    else
+        return info_poligono.extremos[1].first;
+}
+
+int R_Info::get_up(){
+    if(!poligono)
+        return info_tupla.second;
+    else
+        return info_poligono.extremos[0].second;
+}
+
+int R_Info::get_down(){
+    if(!poligono)
+        return info_tupla.second;
+    else
+        return info_poligono.extremos[1].second;
+}

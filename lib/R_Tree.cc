@@ -14,7 +14,7 @@ void R_Tree::print_sfml(sf::RenderWindow &ventana)
     print_sfml(root, ventana);
 }
 
-void R_Tree::insercion(pair<int, int> llave_tupla)
+void R_Tree::insercion(R_Info llave_tupla)
 {
     // I1
     R_Nodo *objetivo = escoger_nodo(root, llave_tupla);
@@ -28,7 +28,7 @@ void R_Tree::insercion(pair<int, int> llave_tupla)
     ajustar_arbol(objetivo, nuevo_nodo);
 }
 
-void R_Tree::eliminacion(pair<int, int> llave_tupla)
+void R_Tree::eliminacion(R_Info llave_tupla)
 {
     // D1 encontrar la hoja que lo contiene
     R_Nodo *obj = hallar_hoja(root, llave_tupla);
@@ -106,7 +106,7 @@ void R_Tree::insertar_entradas(R_Nodo *nodo)
     {
         for (auto i : nodo->llaves_tupla)
         {
-            insercion_info(i);
+            insercion(i);
         }
     }
     else
@@ -149,7 +149,7 @@ void R_Tree::print_desmos(R_Nodo *nodo, int &tupla_id)
     if (nodo->hoja)
     {
         for (auto i : nodo->llaves_tupla)
-            printf("P_{%d} = (%d, %d)\n", tupla_id++, i.first, i.second);
+            printf("P_{%d} = (%d, %d)\n", tupla_id++, i.info_tupla.first, i.info_tupla.second);
     }
     else
     {
@@ -165,12 +165,25 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
 {
     if (nodo->hoja)
     {
-        for (auto i : nodo->llaves_tupla){
-            sf::CircleShape coordenada;
-            coordenada.setRadius(4);
-            coordenada.setFillColor(sf::Color::Red);
-            coordenada.setPosition(i.first - 2, ventana.getSize().y - i.second - 2);
-            ventana.draw(coordenada);
+        for (auto i : nodo->llaves_tupla)
+        {
+            if (!i.poligono)
+            {
+                sf::CircleShape coordenada;
+                coordenada.setRadius(4);
+                coordenada.setFillColor(sf::Color::Red);
+                coordenada.setPosition(i.info_tupla.first - 2, ventana.getSize().y - i.info_tupla.second - 2);
+                ventana.draw(coordenada);
+            }
+            else{
+                sf::ConvexShape convex;
+                convex.setPointCount(i.info_poligono.tuplas.size());
+                for(int j = 0; j<i.info_poligono.tuplas.size(); j++){
+                    convex.setPoint(j, sf::Vector2f(i.info_poligono.tuplas[j].first, i.info_poligono.tuplas[j].second));
+                }
+                convex.setPosition(i.info_poligono.extremos[0].first, ventana.getSize().y - i.info_poligono.extremos[0].second);
+                ventana.draw(convex);
+            }
         }
     }
     else
@@ -191,7 +204,7 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
     }
 }
 
-bool R_Tree::comparar_x_tupla(pair<int, int> a, pair<int, int> b) { return a.first < b.first; }
+bool R_Tree::comparar_x_tupla(R_Info a, R_Info b) { return a.get_left() < b.get_left(); }
 
 bool R_Tree::comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
 {
@@ -201,7 +214,8 @@ bool R_Tree::comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
         return a.first.extremos[1].first < b.first.extremos[1].first;
     return false;
 }
-bool R_Tree::comparar_y_tupla(pair<int, int> a, pair<int, int> b) { return a.second < b.second; }
+
+bool R_Tree::comparar_y_tupla(R_Info a, R_Info b) { return a.get_down() < b.get_down(); }
 
 bool R_Tree::comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b)
 {
@@ -262,22 +276,22 @@ R_Nodo *R_Tree::partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno)
     return nuevo_nodo;
 }
 
-R_Nodo *R_Tree::partir_nodo_tuplas(R_Nodo *&nodo, pair<int, int> llave_tupla)
+R_Nodo *R_Tree::partir_nodo_tuplas(R_Nodo *&nodo, R_Info llave_tupla)
 {
     // int cota_inferior = ceil(0.4 * m), cota_superior = M - ceil(0.4 * m);
     int cota_inferior = m, cota_superior = M - m;
-    vector<pair<int, int>> almacen{nodo->llaves_tupla};
+    vector<R_Info> almacen{nodo->llaves_tupla};
     almacen.push_back(llave_tupla);
 
-    vector<pair<int, int>> S1, S2;
+    vector<R_Info> S1, S2;
     int perimetro_minimo = numeric_limits<int>::max();
     // Para X
     sort(almacen.begin(), almacen.end(), comparar_x_tupla);
     for (int i = cota_inferior; i <= cota_superior; i++)
     {
-        vector<pair<int, int>> tS1(almacen.begin(), next(almacen.begin(), i)), tS2(next(almacen.begin(), i), almacen.end());
-        int perimetro1 = 2 * abs(tS1[0].first - tS1[tS1.size() - 1].first) + 2 * abs(tS1[0].second - tS1[tS1.size() - 1].second);
-        int perimetro2 = 2 * abs(tS2[0].first - tS2[tS2.size() - 1].first) + 2 * abs(tS2[0].second - tS2[tS2.size() - 1].second);
+        vector<R_Info> tS1(almacen.begin(), next(almacen.begin(), i)), tS2(next(almacen.begin(), i), almacen.end());
+        int perimetro1 = 2 * abs(tS1[0].get_left() - tS1[tS1.size() - 1].get_right()) + 2 * abs(tS1[0].get_down() - tS1[tS1.size() - 1].get_up());
+        int perimetro2 = 2 * abs(tS2[0].get_left() - tS2[tS2.size() - 1].get_right()) + 2 * abs(tS2[0].get_down() - tS2[tS2.size() - 1].get_up());
         if (perimetro1 + perimetro2 < perimetro_minimo)
         {
             perimetro_minimo = perimetro1 + perimetro2;
@@ -289,9 +303,9 @@ R_Nodo *R_Tree::partir_nodo_tuplas(R_Nodo *&nodo, pair<int, int> llave_tupla)
     sort(almacen.begin(), almacen.end(), comparar_y_tupla);
     for (int i = cota_inferior; i <= cota_superior; i++)
     {
-        vector<pair<int, int>> tS1(almacen.begin(), next(almacen.begin(), i)), tS2(next(almacen.begin(), i), almacen.end());
-        int perimetro1 = 2 * abs(tS1[0].first - tS1[tS1.size() - 1].first) + 2 * abs(tS1[0].second - tS1[tS1.size() - 1].second);
-        int perimetro2 = 2 * abs(tS2[0].first - tS2[tS2.size() - 1].first) + 2 * abs(tS2[0].second - tS2[tS2.size() - 1].second);
+        vector<R_Info> tS1(almacen.begin(), next(almacen.begin(), i)), tS2(next(almacen.begin(), i), almacen.end());
+        int perimetro1 = 2 * abs(tS1[0].get_left() - tS1[tS1.size() - 1].get_right()) + 2 * abs(tS1[0].get_down() - tS1[tS1.size() - 1].get_up());
+        int perimetro2 = 2 * abs(tS2[0].get_left() - tS2[tS2.size() - 1].get_right()) + 2 * abs(tS2[0].get_down() - tS2[tS2.size() - 1].get_up());
         if (perimetro1 + perimetro2 < perimetro_minimo)
         {
             perimetro_minimo = perimetro1 + perimetro2;
@@ -306,7 +320,7 @@ R_Nodo *R_Tree::partir_nodo_tuplas(R_Nodo *&nodo, pair<int, int> llave_tupla)
     return nuevo_nodo;
 }
 
-R_Nodo *R_Tree::escoger_nodo(R_Nodo *nodo, pair<int, int> llave_tupla)
+R_Nodo *R_Tree::escoger_nodo(R_Nodo *nodo, R_Info llave_tupla)
 {
     if (nodo->hoja)
         return nodo;
