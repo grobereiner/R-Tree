@@ -49,17 +49,31 @@ void Interfaz::eventos()
     sf::Event event;
     while (window.pollEvent(event))
     {
+        if (event.type == sf::Event::MouseButtonPressed)
+        {
+            if (event.mouseButton.button == sf::Mouse::Left)
+            {
+                sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+                pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
+
+                if (coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas)
+                {
+                    cout << "INSERCION: " << coordenada.first << '\t' << coordenada.second << endl;
+                    arbolito.insercion(coordenada);
+                }
+            }
+        }
         if(event.type == sf::Event::KeyPressed){
             // PUNTO
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::C)){
-                this->ingresar_coordenada();
-            }
+            // if(sf::Keyboard::isKeyPressed(sf::Keyboard::C)){
+            //     this->ingresar_coordenada();
+            // }
             // POLIGONO
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::P)){
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::P)){
                 this->ingresar_poligono();
             }
             // ELIMINAR
-            else if(sf::Keyboard::isKeyPressed(sf::Keyboard::E)){
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::E)){
                 this->eliminar();
             }
         }

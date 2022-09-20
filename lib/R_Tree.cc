@@ -394,6 +394,7 @@ void R_Tree::ajustar_arbol(R_Nodo *&objetivo, R_Nodo *nuevo_nodo)
             objetivo->padre->llaves_MBR_hijo.push_back(llave_nodo_interno_2);
 
             root = objetivo->padre;
+            root->padre = nullptr;
         }
         else
         {
