@@ -1,7 +1,13 @@
 CXX = g++
 
-main: main.o R_MBR.o R_Nodo.o R_Tree.o
+main: main.o R_MBR.o R_Nodo.o R_Tree.o R_Info.o R_Poligono.o
 	$(CXX) bin/out/*.o -o bin/debug/main -lsfml-graphics -lsfml-window -lsfml-system
+
+R_Poligono.o:
+	$(CXX) -o bin/out/R_Poligono.o -c lib/R_Poligono.cc
+
+R_Info.o:
+	$(CXX) -o bin/out/R_Info.o -c lib/R_Info.cc
 
 R_MBR.o:
 	$(CXX) -o bin/out/R_MBR.o -c lib/R_MBR.cc

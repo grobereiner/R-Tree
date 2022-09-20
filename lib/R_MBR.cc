@@ -41,20 +41,10 @@ void R_MBR::redimensionar_tuplas(vector<R_Info> tuplas)
     }
     for (auto i : tuplas)
     {
-        if (!i.poligono)
-        {
-            extremos[0].first = min(extremos[0].first, i.info_tupla.first);
-            extremos[1].first = max(extremos[1].first, i.info_tupla.first);
-            extremos[1].second = min(extremos[1].second, i.info_tupla.second);
-            extremos[0].second = max(extremos[0].second, i.info_tupla.second);
-        }
-        else
-        {
-            extremos[0].first = min(extremos[0].first, i.info_poligono.extremos[0].first);
-            extremos[1].first = max(i.info_poligono.extremos[1].first, extremos[1].first);
-            extremos[1].second = min(i.info_poligono.extremos[1].second, extremos[1].second);
-            extremos[0].second = max(i.info_poligono.extremos[0].second, extremos[0].second);
-        }
+        extremos[0].first = min(extremos[0].first, i.get_left());
+        extremos[1].first = max(extremos[1].first, i.get_right());
+        extremos[1].second = min(extremos[1].second, i.get_down());
+        extremos[0].second = max(extremos[0].second, i.get_up());
     }
 }
 
@@ -77,15 +67,7 @@ void R_MBR::redimensionar_mbrs(vector<pair<R_MBR, R_Nodo *>> mbrs)
 bool R_MBR::dentro(R_Info llave_tupla)
 {
     bool en_x, en_y;
-    if (!llave_tupla.poligono)
-    {
-        en_x = llave_tupla.info_tupla.first >= extremos[0].first && llave_tupla.info_tupla.first <= extremos[1].first;
-        en_y = llave_tupla.info_tupla.second <= extremos[0].second && llave_tupla.info_tupla.second >= extremos[1].second;
-    }
-    else
-    {
-        en_x = llave_tupla.info_poligono.extremos[0].first >= extremos[0].first && llave_tupla.info_poligono.extremos[1].first <= extremos[1].first;
-        en_y = llave_tupla.info_poligono.extremos[0].second <= extremos[0].second && llave_tupla.info_poligono.extremos[1].second >= extremos[1].second;
-    }
+    en_x = llave_tupla.get_left() >= extremos[0].first && llave_tupla.get_right() <= extremos[1].first;
+    en_y = llave_tupla.get_up() <= extremos[0].second && llave_tupla.get_down() >= extremos[1].second;
     return en_x && en_y;
 }

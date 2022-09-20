@@ -6,6 +6,7 @@
 #include <utility>
 #include <cstdlib>
 #include "R_Nodo.h"
+#include "R_Info.h"
 
 using namespace std;
 
