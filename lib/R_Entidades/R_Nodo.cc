@@ -1,4 +1,4 @@
-#include "../include/R_Nodo.h"
+#include "../../include/R_Entidades/R_Nodo.h"
 
 R_Nodo::R_Nodo() : padre(nullptr) {}
 

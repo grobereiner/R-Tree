@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <utility>
 #include <iostream>
-#include "../include/R_Tree.h"
+#include "../R_Entidades/R_Tree.h"
 
 using namespace std;
 

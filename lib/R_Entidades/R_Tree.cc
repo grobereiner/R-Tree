@@ -1,4 +1,4 @@
-#include "../include/R_Tree.h"
+#include "../../include/R_Entidades/R_Tree.h"
 
 R_Tree::R_Tree() : root(new R_Nodo(true)) { root->padre = nullptr; }
 

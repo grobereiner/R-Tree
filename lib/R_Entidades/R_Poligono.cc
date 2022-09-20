@@ -1,4 +1,4 @@
-#include "../include/R_Poligono.h"
+#include "../../include/R_Entidades/R_Poligono.h"
 
 R_Poligono::R_Poligono(vector<pair<int, int>> p)
     : tuplas(p)

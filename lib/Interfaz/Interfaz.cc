@@ -1,4 +1,4 @@
-#include "../include/Interfaz.h"
+#include "../../include/Interfaz/Interfaz.h"
 
 Interfaz::Interfaz(int wc, int hc, int we)
     : width_canvas(wc), height_canvas(hc), width_ext(we)
@@ -92,6 +92,8 @@ void Interfaz::eventos()
     sf::Event event;
     while (window.pollEvent(event))
     {
+        if (event.type == sf::Event::Closed)
+            window.close();
         if (event.type != sf::Event::KeyPressed)
             continue;
 
@@ -105,8 +107,6 @@ void Interfaz::eventos()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
             this->eliminar(event);
 
-        if (event.type == sf::Event::Closed)
-            window.close();
     }
 }
 

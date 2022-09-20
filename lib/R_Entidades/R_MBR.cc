@@ -1,4 +1,4 @@
-#include "../include/R_MBR.h"
+#include "../../include/R_Entidades/R_MBR.h"
 
 R_MBR::R_MBR(vector<R_Info> tuplas)
 {
