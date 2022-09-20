@@ -1,7 +1,7 @@
 CXX = g++
 
 main: main.o R_MBR.o R_Nodo.o R_Tree.o R_Info.o R_Poligono.o Interfaz.o
-	$(CXX) bin/out/*.o -o bin/debug/main -lsfml-graphics -lsfml-window -lsfml-system
+	$(CXX) bin/out/*.o -o bin/release/main -lsfml-graphics -lsfml-window -lsfml-system
 
 Interfaz.o:
 	$(CXX) -o bin/out/Interfaz.o -c lib/Interfaz.cc
