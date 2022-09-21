@@ -200,7 +200,7 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
                 convex.setFillColor(sf::Color::Blue);
                 ventana.draw(convex);
 
-                ///sdfsfs
+                // sdfsfs
                 sf::Text text;
                 text.setFont(font);
                 text.setString(polygon_coords);
