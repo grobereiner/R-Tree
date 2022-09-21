@@ -4,6 +4,7 @@
 #include <iostream>
 #include <deque>
 #include <algorithm>
+#include <string>
 #include <cmath>
 #include "R_Nodo.h"
 #include "R_MBR.h"
@@ -25,11 +26,12 @@ protected:
 
     R_Nodo *hallar_hoja(R_Nodo *nodo, R_Info llave_tupla);
     void print_desmos(R_Nodo *nodo, int &tupla_id);
-    void print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana);
+    void print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio);
     static bool comparar_x_tupla(R_Info a, R_Info b);
     static bool comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
     static bool comparar_y_tupla(R_Info a, R_Info b);
     static bool comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
+    static string tupla_string(pair<int, int> llave_tupla);
 
     R_Nodo *partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno);
 
@@ -41,6 +43,7 @@ protected:
 
 private:
     R_Nodo *root;
+    sf::Font font;
 };
 
 #endif

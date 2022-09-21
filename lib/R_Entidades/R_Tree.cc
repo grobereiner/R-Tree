@@ -1,10 +1,16 @@
 #include "../../include/R_Entidades/R_Tree.h"
 
-R_Tree::R_Tree() : root(new R_Nodo(true)) { root->padre = nullptr; }
+R_Tree::R_Tree() : root(new R_Nodo(true)) { 
+    root->padre = nullptr; 
+    if(!font.loadFromFile("res/font/LemonMilk.otf")){
+        cout<<"NO HUBO CARGA DE FUENTE"<<endl;
+    }
+}
 
 void R_Tree::print_sfml(sf::RenderWindow &ventana)
 {
-    print_sfml(root, ventana);
+    int espacio{10};
+    print_sfml(root, ventana, espacio);
 }
 
 void R_Tree::insercion(R_Info llave_tupla)
@@ -153,7 +159,11 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
     return nullptr;
 }
 
-void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
+string R_Tree::tupla_string(pair<int, int> llave_tupla){
+    return "("+to_string(llave_tupla.first)+", "+to_string(llave_tupla.second)+")";
+}
+
+void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
 {
     if (nodo->hoja)
     {
@@ -166,6 +176,16 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
                 coordenada.setFillColor(sf::Color::Red);
                 coordenada.setPosition(i.info_tupla.first - 2, ventana.getSize().y - i.info_tupla.second - 2);
                 ventana.draw(coordenada);
+
+                // Imprimir coordendas
+                sf::Text text;
+                text.setFont(font);
+                text.setString(tupla_string(i.info_tupla));
+                text.setCharacterSize(10);
+                text.setFillColor(sf::Color::White);
+                text.setPosition(sf::Vector2f(ventana.getSize().x*3.f/4.f, ventana.getSize().y/10 + espacio));
+                ventana.draw(text);
+                espacio += 13;
             }
             else
             {
@@ -193,7 +213,7 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
             rectangulo.setFillColor(sf::Color::Transparent);
 
             ventana.draw(rectangulo);
-            print_sfml(i.second, ventana);
+            print_sfml(i.second, ventana, espacio);
         }
     }
 }
