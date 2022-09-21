@@ -110,13 +110,22 @@ void Interfaz::eventos()
     }
 }
 
+void Interfaz::marco(){
+    sf::RectangleShape rect(sf::Vector2f(width_canvas, height_canvas));
+    rect.setOutlineColor(sf::Color::Magenta);
+    rect.setOutlineThickness(2);
+    rect.setFillColor(sf::Color::Transparent);
+    window.draw(rect);
+}
+
 void Interfaz::ejecutar()
 {
     while (window.isOpen())
-    {
+    {   
         this->eventos();
 
         window.clear();
+        this->marco();
         arbolito.print_sfml(window);
         window.display();
     }

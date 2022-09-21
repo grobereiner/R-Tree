@@ -180,10 +180,10 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
                 // Imprimir coordendas
                 sf::Text text;
                 text.setFont(font);
-                text.setString(tupla_string(i.info_tupla));
+                text.setString("Punto: "+tupla_string(i.info_tupla));
                 text.setCharacterSize(10);
                 text.setFillColor(sf::Color::White);
-                text.setPosition(sf::Vector2f(ventana.getSize().x*3.f/4.f, ventana.getSize().y/10 + espacio));
+                text.setPosition(sf::Vector2f(ventana.getSize().x*7.f/10.f, ventana.getSize().y/10 + espacio));
                 ventana.draw(text);
                 espacio += 13;
             }
@@ -203,10 +203,10 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
                 // sdfsfs
                 sf::Text text;
                 text.setFont(font);
-                text.setString(polygon_coords);
+                text.setString("Poligono: "+polygon_coords);
                 text.setCharacterSize(10);
                 text.setFillColor(sf::Color::White);
-                text.setPosition(sf::Vector2f(ventana.getSize().x*3.f/4.f, ventana.getSize().y/10 + espacio));
+                text.setPosition(sf::Vector2f(ventana.getSize().x*7.f/10.f, ventana.getSize().y/10 + espacio));
                 ventana.draw(text);
                 espacio += 13;
             }

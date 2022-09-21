@@ -14,6 +14,7 @@ public:
     Interfaz(int wc, int hc, int we);
     void ejecutar();
 protected:
+    void marco();
     void eventos();
     void ingresar_coordenada(sf::Event& event);
     void ingresar_poligono(sf::Event& event);
