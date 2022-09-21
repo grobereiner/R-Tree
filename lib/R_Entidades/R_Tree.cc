@@ -10,7 +10,7 @@ R_Tree::R_Tree() : root(new R_Nodo(true)) {
 void R_Tree::print_sfml(sf::RenderWindow &ventana)
 {
     int espacio{10};
-    print_sfml(root, ventana, espacio);
+    print_sfml_recursiva(root, ventana, espacio);
 }
 
 void R_Tree::insercion(R_Info llave_tupla)
@@ -163,7 +163,7 @@ string R_Tree::tupla_string(pair<int, int> llave_tupla){
     return "("+to_string(llave_tupla.first)+", "+to_string(llave_tupla.second)+")";
 }
 
-void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
+void R_Tree::print_sfml_recursiva(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
 {
     if (nodo->hoja)
     {
@@ -225,7 +225,7 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
             rectangulo.setFillColor(sf::Color::Transparent);
 
             ventana.draw(rectangulo);
-            print_sfml(i.second, ventana, espacio);
+            print_sfml_recursiva(i.second, ventana, espacio);
         }
     }
 }
