@@ -190,13 +190,25 @@ void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio)
             else
             {
                 sf::ConvexShape convex;
+                string polygon_coords;
                 convex.setPointCount(i.info_poligono.tuplas.size());
                 for (int j = 0; j < i.info_poligono.tuplas.size(); j++)
                 {
                     convex.setPoint(j, sf::Vector2f(i.info_poligono.tuplas[j].first, ventana.getSize().y - i.info_poligono.tuplas[j].second));
+                    polygon_coords = polygon_coords + tupla_string(i.info_poligono.tuplas[j]) + '\t';
                 }
                 convex.setFillColor(sf::Color::Blue);
                 ventana.draw(convex);
+
+                ///sdfsfs
+                sf::Text text;
+                text.setFont(font);
+                text.setString(polygon_coords);
+                text.setCharacterSize(10);
+                text.setFillColor(sf::Color::White);
+                text.setPosition(sf::Vector2f(ventana.getSize().x*3.f/4.f, ventana.getSize().y/10 + espacio));
+                ventana.draw(text);
+                espacio += 13;
             }
         }
     }
