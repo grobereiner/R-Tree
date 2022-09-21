@@ -2,13 +2,6 @@
 
 R_Tree::R_Tree() : root(new R_Nodo(true)) { root->padre = nullptr; }
 
-void R_Tree::print_desmos()
-{
-    int tupla_id = 0;
-    print_desmos(root, tupla_id);
-    cout << '\n';
-}
-
 void R_Tree::print_sfml(sf::RenderWindow &ventana)
 {
     print_sfml(root, ventana);
@@ -40,8 +33,9 @@ void R_Tree::eliminacion(R_Info llave_tupla)
     for (int i = 0; i < obj->llaves_tupla.size(); i++)
     {
         ///////
-        if(obj->llaves_tupla[i].poligono){
-            if(!obj->llaves_tupla[i].info_poligono.dentro(llave_tupla.info_tupla))
+        if (obj->llaves_tupla[i].poligono)
+        {
+            if (!obj->llaves_tupla[i].info_poligono.dentro(llave_tupla.info_tupla))
                 continue;
             obj->llaves_tupla.erase(next(obj->llaves_tupla.begin(), i));
             break;
@@ -135,15 +129,16 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
     {
         for (auto tupla : nodo->llaves_tupla)
         {
-            if(!tupla.poligono){
+            if (!tupla.poligono)
+            {
                 if (llave_tupla == tupla)
                     return nodo;
             }
-            else{
-                if(tupla.info_poligono.dentro(llave_tupla.info_tupla))
+            else
+            {
+                if (tupla.info_poligono.dentro(llave_tupla.info_tupla))
                     return nodo;
             }
-            
         }
         return nullptr;
     }
@@ -156,24 +151,6 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
             return hallar;
     }
     return nullptr;
-}
-
-void R_Tree::print_desmos(R_Nodo *nodo, int &tupla_id)
-{
-
-    if (nodo->hoja)
-    {
-        for (auto i : nodo->llaves_tupla)
-            printf("P_{%d} = (%d, %d)\n", tupla_id++, i.info_tupla.first, i.info_tupla.second);
-    }
-    else
-    {
-        for (auto i : nodo->llaves_MBR_hijo)
-        {
-            printf("\\operatorname{polygon}((%d, %d), (%d, %d), (%d, %d), (%d, %d))\n", i.first.extremos[0].first, i.first.extremos[0].second, i.first.extremos[1].first, i.first.extremos[0].second, i.first.extremos[1].first, i.first.extremos[1].second, i.first.extremos[0].first, i.first.extremos[1].second);
-            print_desmos(i.second, tupla_id);
-        }
-    }
 }
 
 void R_Tree::print_sfml(R_Nodo *nodo, sf::RenderWindow &ventana)
