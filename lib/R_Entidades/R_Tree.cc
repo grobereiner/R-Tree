@@ -30,14 +30,24 @@ void R_Tree::insercion(R_Info llave_tupla)
 
 void R_Tree::eliminacion(R_Info llave_tupla)
 {
+
     // D1 encontrar la hoja que lo contiene
     R_Nodo *obj = hallar_hoja(root, llave_tupla);
     if (obj == nullptr)
         return;
 
-    // D2 remover la coordenada
+    // D2 remover la coordenada o poligono que contiene la coordenada
     for (int i = 0; i < obj->llaves_tupla.size(); i++)
     {
+        ///////
+        if(obj->llaves_tupla[i].poligono){
+            if(!obj->llaves_tupla[i].info_poligono.dentro(llave_tupla.info_tupla))
+                continue;
+            obj->llaves_tupla.erase(next(obj->llaves_tupla.begin(), i));
+            break;
+        }
+
+        ///////
         if (obj->llaves_tupla[i] != llave_tupla)
             continue;
         obj->llaves_tupla.erase(next(obj->llaves_tupla.begin(), i));
@@ -125,10 +135,15 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
     {
         for (auto tupla : nodo->llaves_tupla)
         {
-            if (llave_tupla == tupla)
-            {
-                return nodo;
+            if(!tupla.poligono){
+                if (llave_tupla == tupla)
+                    return nodo;
             }
+            else{
+                if(tupla.info_poligono.dentro(llave_tupla.info_tupla))
+                    return nodo;
+            }
+            
         }
         return nullptr;
     }
