@@ -123,6 +123,8 @@ void Interfaz::eventos()
 }
 
 void Interfaz::buscar_k_coordenadas(sf::Event& event){
+    int k {3};
+    cout<<"BUSQUEDA DE "<<k<<"VECINOS:"<<endl;
     while (1)
     {
         if (!window.pollEvent(event))
@@ -136,13 +138,34 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
 
         sf::Vector2i localPosition = sf::Mouse::getPosition(window);
         pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
+        sf::Vertex linea[2]{ 
+            sf::Vector2f(localPosition.x, localPosition.y)
+        };
+        linea[0].color = sf::Color::Green;
 
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            arbolito.buscar_k_vecinos(coordenada, 3);
+            vector<pair<int,int>> k_vecinos = arbolito.buscar_k_vecinos(coordenada, k);
+            for(auto i: k_vecinos){
+                linea[1] = sf::Vector2f(i.first, window.getSize().y - i.second);
+                linea[1].color = sf::Color::Green;
+                // cout<<linea[1].position.x<<"  "<<linea[1].position.y<<endl;
+                window.draw(linea, 2, sf::Lines);
+                window.display();
+            }
         }
-        return;
+        while(1){
+            if (!window.pollEvent(event))
+            continue;
+
+            if (event.type != sf::Event::MouseButtonPressed)
+                continue;
+
+            if (event.mouseButton.button != sf::Mouse::Left)
+                continue;
+            return;
+        }
     }
 }
 

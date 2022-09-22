@@ -1,28 +1,26 @@
 #include "../../include/R_Entidades/R_Tree.h"
 
-
-bool operator<(R_Tree::punto_distancia const& pd1, punto_distancia const& pd2){
-    return dist < otro.dist;
+bool operator<(const R_Tree::punto_distancia &pd1, const R_Tree::punto_distancia &pd2){
+    return pd1.dist < pd2.dist;
 }
-bool operator>(punto_distancia const& pd1, punto_distancia const& pd2){
-    return dist > otro.dist;
+bool operator>(const R_Tree::punto_distancia &pd1, const R_Tree::punto_distancia &pd2){
+    return pd1.dist > pd2.dist;
 }
-bool operator<=(punto_distancia const& pd1, punto_distancia const& pd2){
-    return dist <= otro.dist;
+bool operator<=(const R_Tree::punto_distancia &pd1, const R_Tree::punto_distancia &pd2){
+    return pd1.dist <= pd2.dist;
 }
-bool operator>=(punto_distancia const& pd1, punto_distancia const& pd2){
-    return dist >= otro.dist;
+bool operator>=(const R_Tree::punto_distancia &pd1, const R_Tree::punto_distancia &pd2){
+    return pd1.dist >= pd2.dist;
 }
-
 
 R_Tree::punto_distancia::punto_distancia(pair<int, int> _tupla, const pair<int, int> &origen)
 :tupla(_tupla){
     dist = abs(_tupla.first - origen.first) + abs(_tupla.second - origen.second);
 }
 
-vector<R_Tree::punto_distancia> R_Tree::buscar_k_vecinos(R_Info origen, int k){
+vector<pair<int, int>> R_Tree::buscar_k_vecinos(R_Info origen, int k){
     int radio{40};
-    vector<R_Tree::punto_distancia> resultado;
+    vector<pair<int, int>> resultado;
     priority_queue<R_Tree::punto_distancia, deque<R_Tree::punto_distancia>> cercanos;
     while(radio < 800){
         priority_queue<R_Tree::punto_distancia, deque<R_Tree::punto_distancia>> temp;
@@ -35,11 +33,11 @@ vector<R_Tree::punto_distancia> R_Tree::buscar_k_vecinos(R_Info origen, int k){
     }
     resultado.reserve(k);
     for(int i=0; i<k && !cercanos.empty(); i++){
-        resultado.push_back(cercanos.top());
+        resultado.push_back(cercanos.top().tupla);
         cercanos.pop();
     }
     for(auto i: resultado){
-        cout<<i.tupla.first<<"\t"<<i.tupla.second<<endl;
+        cout<<i.first<<"\t"<<i.second<<endl;
     }
     return resultado;
 }  

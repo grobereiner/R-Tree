@@ -24,10 +24,10 @@ protected:
         pair<int, int> tupla;
         int dist;
     };
-    friend bool operator<(punto_distancia const& pd1, punto_distancia const& pd2);
-    friend bool operator>(punto_distancia const& pd1, punto_distancia const& pd2);
-    friend bool operator<=(punto_distancia const& pd1, punto_distancia const& pd2);
-    friend bool operator>=(punto_distancia const& pd1, punto_distancia const& pd2);
+    friend bool operator<(const punto_distancia &pd1, const punto_distancia &pd2);
+    friend bool operator>(const punto_distancia &pd1, const punto_distancia &pd2);
+    friend bool operator<=(const punto_distancia &pd1, const punto_distancia &pd2);
+    friend bool operator>=(const punto_distancia &pd1, const punto_distancia &pd2);
 
     void buscar_k_vecinos_rec(R_MBR origen, R_Nodo *nodo, priority_queue<punto_distancia, deque<punto_distancia>> &cercanos);
 
@@ -76,7 +76,7 @@ public:
      */
     void eliminacion(R_Info llave_tupla);
 
-    vector<punto_distancia> buscar_k_vecinos(R_Info origen, int k);
+    vector<pair<int, int>> buscar_k_vecinos(R_Info origen, int k);
 
 
 private:
