@@ -50,7 +50,6 @@ void Interfaz::ingresar_poligono(sf::Event &event)
         {
             sf::Vector2i localPosition = sf::Mouse::getPosition(window);
             pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
-
             if (!inside_canvas(coordenada))
             {
                 if (coordenadas.size() > 2)
@@ -60,6 +59,14 @@ void Interfaz::ingresar_poligono(sf::Event &event)
 
             coordenadas.push_back(coordenada);
             cout << coordenada.first << '\t' << coordenada.second << endl;
+
+            // Visualizar como se esta creando el poligono
+            sf::CircleShape coordenada_vista;
+            coordenada_vista.setRadius(2);
+            coordenada_vista.setFillColor(sf::Color::Yellow);
+            coordenada_vista.setPosition(coordenada.first - 2, window.getSize().y - coordenada.second - 2);
+            window.draw(coordenada_vista);
+            window.display();
         }
     }
 }
