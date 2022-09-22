@@ -31,4 +31,3 @@ clean:
 	rm bin/release/*
 	rm bin/out/* 
 	rm bin/debug/*
-	rm *.txt 
