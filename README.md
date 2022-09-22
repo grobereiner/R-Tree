@@ -1,5 +1,19 @@
 # R-Tree
 
+![](docs/img/ventana.jpg)
+
+## Controles
+- Tecla **P**: insertar un polígono
+    - Si se dan clics en el plano, apareceran puntos amarillos temporales. 
+    - Para terminar la inserción, hacer clic en el espacio de aparición de información.
+- Tecla **C**: insertar una coordenada
+    - Dar clic en el plano
+- Tecla **E**: Eliminar una coordenada
+    - Eliminar polígono:
+        - Hacer clic dentro del polígono
+    - Eliminar coordenada:
+        - Hacer clic cerca a la coordenada
+
 ## Comandos make
 
 ### ```make```
@@ -18,15 +32,4 @@ Elimina archivos generados por otros comandos **make**
 ```
 export DISPLAY=$(route.exe print | grep 0.0.0.0 | head -1 | awk '{print $4}'):0.0
 ```
-
-## Clases
-
-### R_MBR
-Clase encargada de la región de mínima expansión que contenga otros nodos
-
-### R_Nodo
-Clase que tiene un nodo con tuplas o con (MBR, R_Nodo hijos)
-
-### R_Tree
-Clase que representa al R-Tree, contiene métodos para la inserción, eliminación y visualización en desmos o en sfml.
 
