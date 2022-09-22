@@ -78,19 +78,22 @@ void Interfaz::eliminar(sf::Event &event)
     {
         if (!window.pollEvent(event))
             continue;
-        if (event.type != sf::Event::KeyPressed)
+
+        if (event.type != sf::Event::MouseButtonPressed)
             continue;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+        if (event.mouseButton.button != sf::Mouse::Left)
+            continue;
+
+        sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+        pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
+
+        if (inside_canvas(coordenada))
         {
-            this->eliminar_coordenada(event);
-            return;
+            cout << coordenada.first << '\t' << coordenada.second << endl;
+            arbolito.eliminacion(coordenada);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
-        {
-            this->eliminar_poligono(event);
-            return;
-        }
+        return;
     }
 }
 
@@ -135,40 +138,5 @@ void Interfaz::ejecutar()
         this->marco();
         arbolito.print_sfml(window);
         window.display();
-    }
-}
-
-void Interfaz::eliminar_coordenada(sf::Event &event)
-{
-    cout << "INGRESAR COORDENADA A ELIMINAR: ";
-    pair<int, int> coordenada;
-    cin >> coordenada.first >> coordenada.second;
-    if (inside_canvas(coordenada))
-        arbolito.eliminacion(coordenada);
-}
-
-void Interfaz::eliminar_poligono(sf::Event &event)
-{
-    cout << "ELIMINACION DE POLIGONO" << endl;
-    while (1)
-    {
-        if (!window.pollEvent(event))
-            continue;
-
-        if (event.type != sf::Event::MouseButtonPressed)
-            continue;
-
-        if (event.mouseButton.button != sf::Mouse::Left)
-            continue;
-
-        sf::Vector2i localPosition = sf::Mouse::getPosition(window);
-        pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
-
-        if (inside_canvas(coordenada))
-        {
-            cout << coordenada.first << '\t' << coordenada.second << endl;
-            arbolito.eliminacion(coordenada);
-        }
-        return;
     }
 }

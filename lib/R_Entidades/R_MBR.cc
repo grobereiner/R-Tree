@@ -1,5 +1,10 @@
 #include "../../include/R_Entidades/R_MBR.h"
 
+R_MBR::R_MBR(R_Info tupla){
+    extremos[0] = {tupla.info_tupla.first-6, tupla.info_tupla.second+6};
+    extremos[1] = {tupla.info_tupla.first+6, tupla.info_tupla.second-6};
+}
+
 R_MBR::R_MBR(vector<R_Info> tuplas)
 {
     this->redimensionar_tuplas(tuplas);

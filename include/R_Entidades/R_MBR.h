@@ -16,6 +16,7 @@ struct R_Nodo;
 struct R_MBR
 {
     R_MBR() = default;
+    R_MBR(R_Info tupla);
     R_MBR(vector<R_Info> tuplas);
     R_MBR(vector<pair<R_MBR, R_Nodo *>> mbrs);
     /*

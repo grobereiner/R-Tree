@@ -48,7 +48,7 @@ void R_Tree::eliminacion(R_Info llave_tupla)
         }
 
         ///////
-        if (obj->llaves_tupla[i] != llave_tupla)
+        if (!R_MBR(obj->llaves_tupla[i]).dentro(llave_tupla.info_tupla))
             continue;
         obj->llaves_tupla.erase(next(obj->llaves_tupla.begin(), i));
         break;
@@ -137,7 +137,7 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
         {
             if (!tupla.poligono)
             {
-                if (llave_tupla == tupla)
+                if (R_MBR(llave_tupla).dentro(tupla))
                     return nodo;
             }
             else

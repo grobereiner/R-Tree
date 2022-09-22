@@ -38,8 +38,6 @@ protected:
 
 private:
     bool inside_canvas(pair<int, int> coordenada);
-    void eliminar_coordenada(sf::Event& event);
-    void eliminar_poligono(sf::Event& event);
 
     R_Tree arbolito;
     sf::RenderWindow window;
