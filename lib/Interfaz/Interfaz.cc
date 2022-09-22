@@ -124,7 +124,7 @@ void Interfaz::eventos()
 
 void Interfaz::buscar_k_coordenadas(sf::Event& event){
     int k {3};
-    cout<<"BUSQUEDA DE "<<k<<"VECINOS:"<<endl;
+    cout<<"BUSQUEDA DE "<<k<<" VECINOS:"<<endl;
     while (1)
     {
         if (!window.pollEvent(event))
