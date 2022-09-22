@@ -116,7 +116,33 @@ void Interfaz::eventos()
         // ELIMINAR
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
             this->eliminar(event);
+        // BUSCAR K VECINOS COORD
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+            this->buscar_k_coordenadas(event);
+    }
+}
 
+void Interfaz::buscar_k_coordenadas(sf::Event& event){
+    while (1)
+    {
+        if (!window.pollEvent(event))
+            continue;
+
+        if (event.type != sf::Event::MouseButtonPressed)
+            continue;
+
+        if (event.mouseButton.button != sf::Mouse::Left)
+            continue;
+
+        sf::Vector2i localPosition = sf::Mouse::getPosition(window);
+        pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
+
+        if (inside_canvas(coordenada))
+        {
+            cout << coordenada.first << '\t' << coordenada.second << endl;
+            arbolito.buscar_k_vecinos(coordenada, 3);
+        }
+        return;
     }
 }
 

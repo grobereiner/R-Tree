@@ -16,7 +16,7 @@ struct R_Nodo;
 struct R_MBR
 {
     R_MBR() = default;
-    R_MBR(R_Info tupla);
+    R_MBR(R_Info tupla, int radio);
     R_MBR(vector<R_Info> tuplas);
     R_MBR(vector<pair<R_MBR, R_Nodo *>> mbrs);
     /*
@@ -30,6 +30,8 @@ struct R_MBR
     pair<int, int> extremos[2];
     int agrandamiento(R_Info tupla);
     void redimensionar_tuplas(vector<R_Info> tuplas);
+    bool intercepta(R_MBR otro);
+    pair<int, int> medio();
 
     void redimensionar_mbrs(vector<pair<R_MBR, R_Nodo *>> mbrs);
     bool dentro(R_Info llave_tupla);

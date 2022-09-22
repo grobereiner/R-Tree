@@ -34,6 +34,7 @@ protected:
     void eventos();
     void ingresar_coordenada(sf::Event& event);
     void ingresar_poligono(sf::Event& event);
+    void buscar_k_coordenadas(sf::Event& event);
     void eliminar(sf::Event& event);
 
 private:

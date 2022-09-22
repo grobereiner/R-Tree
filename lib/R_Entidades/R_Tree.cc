@@ -1,5 +1,63 @@
 #include "../../include/R_Entidades/R_Tree.h"
 
+
+bool operator<(R_Tree::punto_distancia const& pd1, punto_distancia const& pd2){
+    return dist < otro.dist;
+}
+bool operator>(punto_distancia const& pd1, punto_distancia const& pd2){
+    return dist > otro.dist;
+}
+bool operator<=(punto_distancia const& pd1, punto_distancia const& pd2){
+    return dist <= otro.dist;
+}
+bool operator>=(punto_distancia const& pd1, punto_distancia const& pd2){
+    return dist >= otro.dist;
+}
+
+
+R_Tree::punto_distancia::punto_distancia(pair<int, int> _tupla, const pair<int, int> &origen)
+:tupla(_tupla){
+    dist = abs(_tupla.first - origen.first) + abs(_tupla.second - origen.second);
+}
+
+vector<R_Tree::punto_distancia> R_Tree::buscar_k_vecinos(R_Info origen, int k){
+    int radio{40};
+    vector<R_Tree::punto_distancia> resultado;
+    priority_queue<R_Tree::punto_distancia, deque<R_Tree::punto_distancia>> cercanos;
+    while(radio < 800){
+        priority_queue<R_Tree::punto_distancia, deque<R_Tree::punto_distancia>> temp;
+        buscar_k_vecinos_rec(R_MBR(origen.info_tupla, radio), root, temp);
+        if(temp.size() >= k){
+            cercanos = temp;
+            break;
+        }
+        radio += 40;
+    }
+    resultado.reserve(k);
+    for(int i=0; i<k && !cercanos.empty(); i++){
+        resultado.push_back(cercanos.top());
+        cercanos.pop();
+    }
+    for(auto i: resultado){
+        cout<<i.tupla.first<<"\t"<<i.tupla.second<<endl;
+    }
+    return resultado;
+}  
+
+void R_Tree::buscar_k_vecinos_rec(R_MBR origen, R_Nodo *nodo, priority_queue<R_Tree::punto_distancia, deque<R_Tree::punto_distancia>> &cercanos){
+    if(nodo->hoja){
+        for(auto i: nodo->llaves_tupla){
+            if(origen.dentro(i))
+                cercanos.push({i.info_tupla, origen.medio()});
+        }
+        return;
+    }
+    for(auto i: nodo->llaves_MBR_hijo){
+        if(origen.intercepta(i.first))
+            buscar_k_vecinos_rec(origen, i.second, cercanos);
+    }
+}
+
 R_Tree::R_Tree() : root(new R_Nodo(true)) { 
     root->padre = nullptr; 
     if(!font.loadFromFile("res/font/LemonMilk.otf")){
@@ -48,7 +106,7 @@ void R_Tree::eliminacion(R_Info llave_tupla)
         }
 
         ///////
-        if (!R_MBR(obj->llaves_tupla[i]).dentro(llave_tupla.info_tupla))
+        if (!R_MBR(obj->llaves_tupla[i], 6).dentro(llave_tupla.info_tupla))
             continue;
         obj->llaves_tupla.erase(next(obj->llaves_tupla.begin(), i));
         break;
@@ -137,7 +195,7 @@ R_Nodo *R_Tree::hallar_hoja(R_Nodo *nodo, R_Info llave_tupla)
         {
             if (!tupla.poligono)
             {
-                if (R_MBR(llave_tupla).dentro(tupla))
+                if (R_MBR(llave_tupla, 6).dentro(tupla))
                     return nodo;
             }
             else

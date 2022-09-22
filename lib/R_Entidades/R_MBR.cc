@@ -1,8 +1,20 @@
 #include "../../include/R_Entidades/R_MBR.h"
 
-R_MBR::R_MBR(R_Info tupla){
-    extremos[0] = {tupla.info_tupla.first-6, tupla.info_tupla.second+6};
-    extremos[1] = {tupla.info_tupla.first+6, tupla.info_tupla.second-6};
+pair<int, int> R_MBR::medio(){
+    return {extremos[1].first - extremos[0].first, extremos[0].second - extremos[1].second};
+}
+
+R_MBR::R_MBR(R_Info tupla, int radio){
+    extremos[0] = {tupla.info_tupla.first-radio, tupla.info_tupla.second+radio};
+    extremos[1] = {tupla.info_tupla.first+radio, tupla.info_tupla.second-radio};
+}
+
+bool R_MBR::intercepta(R_MBR otro){
+    if(extremos[0].first > otro.extremos[1].first || otro.extremos[0].first > extremos[1].first)
+        return false;
+    if(extremos[1].second > otro.extremos[0].second || otro.extremos[1].second > extremos[0].second)
+        return false;
+    return true;
 }
 
 R_MBR::R_MBR(vector<R_Info> tuplas)

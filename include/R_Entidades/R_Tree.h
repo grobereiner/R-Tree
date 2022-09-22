@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <string>
 #include <cmath>
+#include <queue>
 #include "R_Nodo.h"
 #include "R_MBR.h"
 #include <SFML/Graphics.hpp>
@@ -16,6 +17,40 @@
  */
 class R_Tree
 {
+protected:
+
+    struct punto_distancia{
+        punto_distancia(pair<int, int> _tupla, const pair<int, int> &origen);
+        pair<int, int> tupla;
+        int dist;
+    };
+    friend bool operator<(punto_distancia const& pd1, punto_distancia const& pd2);
+    friend bool operator>(punto_distancia const& pd1, punto_distancia const& pd2);
+    friend bool operator<=(punto_distancia const& pd1, punto_distancia const& pd2);
+    friend bool operator>=(punto_distancia const& pd1, punto_distancia const& pd2);
+
+    void buscar_k_vecinos_rec(R_MBR origen, R_Nodo *nodo, priority_queue<punto_distancia, deque<punto_distancia>> &cercanos);
+
+    void condensar(R_Nodo *&nodo, deque<R_Nodo *> &nodos_eliminados);
+
+    void insertar_entradas(R_Nodo *nodo);
+
+    R_Nodo *hallar_hoja(R_Nodo *nodo, R_Info llave_tupla);
+    void print_sfml_recursiva(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio);
+    static bool comparar_x_tupla(R_Info a, R_Info b);
+    static bool comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
+    static bool comparar_y_tupla(R_Info a, R_Info b);
+    static bool comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
+    static string tupla_string(pair<int, int> llave_tupla);
+
+    R_Nodo *partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno);
+
+    R_Nodo *partir_nodo_tuplas(R_Nodo *&nodo, R_Info llave_tupla);
+
+    R_Nodo *escoger_nodo(R_Nodo *nodo, R_Info llave_tupla);
+
+    void ajustar_arbol(R_Nodo *&objetivo, R_Nodo *nuevo_nodo);
+    
 public:
     /**
      * @brief Construye un objeto R-Tree
@@ -41,26 +76,8 @@ public:
      */
     void eliminacion(R_Info llave_tupla);
 
-protected:
-    void condensar(R_Nodo *&nodo, deque<R_Nodo *> &nodos_eliminados);
+    vector<punto_distancia> buscar_k_vecinos(R_Info origen, int k);
 
-    void insertar_entradas(R_Nodo *nodo);
-
-    R_Nodo *hallar_hoja(R_Nodo *nodo, R_Info llave_tupla);
-    void print_sfml_recursiva(R_Nodo *nodo, sf::RenderWindow &ventana, int &espacio);
-    static bool comparar_x_tupla(R_Info a, R_Info b);
-    static bool comparar_x_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
-    static bool comparar_y_tupla(R_Info a, R_Info b);
-    static bool comparar_y_mbr(pair<R_MBR, R_Nodo *> a, pair<R_MBR, R_Nodo *> b);
-    static string tupla_string(pair<int, int> llave_tupla);
-
-    R_Nodo *partir_nodo_mbrs(R_Nodo *&nodo, R_Nodo *otro_nodo_interno);
-
-    R_Nodo *partir_nodo_tuplas(R_Nodo *&nodo, R_Info llave_tupla);
-
-    R_Nodo *escoger_nodo(R_Nodo *nodo, R_Info llave_tupla);
-
-    void ajustar_arbol(R_Nodo *&objetivo, R_Nodo *nuevo_nodo);
 
 private:
     R_Nodo *root;
