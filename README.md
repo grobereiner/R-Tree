@@ -8,6 +8,8 @@
     - Para terminar la inserción, hacer clic en el espacio de aparición de información.
 - Tecla **C**: insertar una coordenada
     - Dar clic en el plano
+- Tecla **B**: buscar 3 vecinos más cercanos
+    - Dar clic en el plano
 - Tecla **E**: Eliminar una coordenada
     - Eliminar polígono:
         - Hacer clic dentro del polígono
