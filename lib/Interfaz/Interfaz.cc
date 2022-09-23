@@ -14,10 +14,16 @@ bool Interfaz::inside_canvas(pair<int, int> coordenada)
 void Interfaz::ingresar_coordenada(sf::Event &event)
 {
     cout << "INSERCION DE COORDENADA:" << endl;
-    while (1)
+    while (window.isOpen())
     {
         if (!window.pollEvent(event))
             continue;
+
+        if (event.type == sf::Event::Closed){
+            window.close();
+            return;
+        }
+        
         if (event.type != sf::Event::MouseButtonPressed)
             continue;
         if (event.mouseButton.button != sf::Mouse::Left)
@@ -39,10 +45,16 @@ void Interfaz::ingresar_poligono(sf::Event &event)
 {
     cout << "INSERCION DE POLIGONO:" << endl;
     vector<pair<int, int>> coordenadas;
-    while (1)
+    while (window.isOpen())
     {
         if (!window.pollEvent(event))
             continue;
+
+        if (event.type == sf::Event::Closed){
+            window.close();
+            return;
+        }
+        
         if (event.type != sf::Event::MouseButtonPressed)
             continue;
 
@@ -125,10 +137,15 @@ void Interfaz::eventos()
 void Interfaz::buscar_k_coordenadas(sf::Event& event){
     int k {3};
     cout<<"BUSQUEDA DE "<<k<<" VECINOS:"<<endl;
-    while (1)
+    while (window.isOpen())
     {
         if (!window.pollEvent(event))
             continue;
+
+        if (event.type == sf::Event::Closed){
+            window.close();
+            return;
+        }
 
         if (event.type != sf::Event::MouseButtonPressed)
             continue;
@@ -155,9 +172,14 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
                 window.display();
             }
         }
-        while(1){
+        while(window.isOpen()){
             if (!window.pollEvent(event))
             continue;
+            
+            if (event.type == sf::Event::Closed){
+                window.close();
+                return;
+            }
 
             if (event.type != sf::Event::MouseButtonPressed)
                 continue;
