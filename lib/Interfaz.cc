@@ -237,10 +237,10 @@ void Interfaz::ejecutar()
 
 void Interfaz::imprimir_arbol_r(){
     int espacio{10};
-    imprimir_arbol_r_recursivo(arbol_r->raiz, espacio);
+    imprimir_arbol_r_recursivo(arbol_r->raiz, espacio, 30);
 }
 
-void Interfaz::imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio){
+void Interfaz::imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio, int color){
     if(nodo->hoja){
         for(auto i: nodo->entradas){
             Entrada_Hoja* eh = dynamic_cast<Entrada_Hoja*>(i);
@@ -293,13 +293,13 @@ void Interfaz::imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio){
             int dx = i->intervalos[0].i2 - i->intervalos[0].i1;
             int dy = i->intervalos[1].i2 - i->intervalos[1].i1;
             sf::RectangleShape rectangulo(sf::Vector2f(dx, dy));
-            rectangulo.setOutlineColor(sf::Color::White);
+            rectangulo.setOutlineColor(sf::Color((40-color)%256, (2*color  + 10)%256, color%256));
             rectangulo.setOutlineThickness(2);
             rectangulo.setPosition(i->intervalos[0].i1, window.getSize().y - i->intervalos[1].i2);
             rectangulo.setFillColor(sf::Color::Transparent);
 
             window.draw(rectangulo);
-            imprimir_arbol_r_recursivo(dynamic_cast<Entrada_Interna*>(i)->puntero_hijo, espacio);
+            imprimir_arbol_r_recursivo(dynamic_cast<Entrada_Interna*>(i)->puntero_hijo, espacio, color+30);
         }
     }
 }

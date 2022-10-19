@@ -42,7 +42,7 @@ protected:
 private:
     bool inside_canvas(pair<int, int> coordenada);
     void imprimir_arbol_r();
-    void imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio);
+    void imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio, int color);
     string tupla_string(Punto llave_tupla);
 
     Arbol_R *arbol_r;
