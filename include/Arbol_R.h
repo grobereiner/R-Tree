@@ -6,6 +6,8 @@
 #include<algorithm>
 #include<limits>
 #include<deque>
+#include<queue>
+#include<cmath>
 
 #include"Nodo.h"
 #include"Entrada_Hoja.h"
@@ -26,6 +28,17 @@ public:
     void eliminar(Punto P);
     vector<Entrada_Hoja*> buscar_k_vecinos(Punto P, int k);
 protected:
+    struct Entrada_Distancia{
+        Entrada_Distancia(Entrada* E, Punto P, bool T);
+        Entrada* entrada;
+        double distancia;
+        bool tupla;
+    };
+    friend bool operator<(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
+    friend bool operator>(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
+    friend bool operator<=(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
+    friend bool operator>=(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
+
     Nodo* escoger_hoja(Entrada_Hoja *E);
     Nodo* partir_nodo(Entrada *E, Nodo *L);
     Nodo* ajustar_arbol(Nodo *L , Nodo* LL);

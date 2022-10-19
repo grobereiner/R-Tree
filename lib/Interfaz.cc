@@ -168,9 +168,17 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
             cout << coordenada.first << '\t' << coordenada.second << endl;
             vector<Entrada_Hoja*> k_vecinos = arbol_r->buscar_k_vecinos({coordenada.first, coordenada.second}, k);
             for(auto i: k_vecinos){
-                linea[1] = sf::Vector2f(i->tuplas[0].x, window.getSize().y - i->tuplas[0].y);
+                double pm_x=0, pm_y=0;
+                for(auto p: i->tuplas){
+                    pm_x+=p.x;
+                    pm_y+=p.y;
+                }
+                pm_x/=i->tuplas.size();
+                pm_y/=i->tuplas.size();
+                
+                linea[1] = sf::Vector2f(static_cast<int>(pm_x), window.getSize().y - static_cast<int>(pm_y));
                 linea[1].color = sf::Color::Green;
-                // cout<<linea[1].position.x<<"  "<<linea[1].position.y<<endl;
+                cout<<linea[1].position.x<<"  "<<linea[1].position.y<<endl;
                 window.draw(linea, 2, sf::Lines);
                 window.display();
             }

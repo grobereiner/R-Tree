@@ -232,9 +232,76 @@ void Arbol_R::eliminar(Punto P){
     }
 }
 
+bool operator<(const Arbol_R::Entrada_Distancia &pd1, const Arbol_R::Entrada_Distancia &pd2){
+    return pd1.distancia < pd2.distancia;
+}
+bool operator>(const Arbol_R::Entrada_Distancia &pd1, const Arbol_R::Entrada_Distancia &pd2){
+    return pd1.distancia>pd2.distancia;
+}
+bool operator<=(const Arbol_R::Entrada_Distancia &pd1, const Arbol_R::Entrada_Distancia &pd2){
+    return pd1.distancia<=pd2.distancia;
+}
+bool operator>=(const Arbol_R::Entrada_Distancia &pd1, const Arbol_R::Entrada_Distancia &pd2){
+    return pd1.distancia>=pd2.distancia;
+}
+
+Arbol_R::Entrada_Distancia::Entrada_Distancia(Entrada* E, Punto P, bool T): entrada(E), tupla(T){
+    if(!T){
+        if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2 && P.y >= E->intervalos[1].i1 && P.y <= E->intervalos[1].i2)
+            distancia = 0;
+        else if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2)
+            distancia = min(abs(P.y-E->intervalos[1].i1), abs(P.y-E->intervalos[1].i2));
+        else if(P.y >= E->intervalos[1].i1 && P.y <= E->intervalos[1].i2)
+            distancia = min(abs(P.x-E->intervalos[0].i1), abs(P.x-E->intervalos[0].i2));
+        else{
+            distancia = min(
+                sqrt(pow(P.y-E->intervalos[1].i1,2)+pow(P.x-E->intervalos[0].i1,2)), 
+                min(
+                    sqrt(pow(P.y-E->intervalos[1].i2,2)+pow(P.x-E->intervalos[0].i1,2)), 
+                    min(
+                        sqrt(pow(P.y-E->intervalos[1].i1,2)+pow(P.x-E->intervalos[0].i2,2)), 
+                        sqrt(pow(P.y-E->intervalos[1].i2,2)+pow(P.x-E->intervalos[0].i2,2))))
+                );
+        }
+    }
+    else{
+        Entrada_Hoja* EH = dynamic_cast<Entrada_Hoja*>(E);
+        if(EH->tuplas.size() == 1){
+            distancia = sqrt(pow(P.x-EH->tuplas[0].x,2)+pow(P.y-EH->tuplas[0].y,2));
+        }
+        else{
+            double pm_x=0, pm_y=0;
+            for(auto p: EH->tuplas){
+                pm_x+=p.x;
+                pm_y+=p.y;
+            }
+            pm_x/=EH->tuplas.size();
+            pm_y/=EH->tuplas.size();
+            distancia = sqrt(pow(P.x-pm_x,2)+pow(P.y-pm_y,2));
+        }
+    }
+}
+
 vector<Entrada_Hoja*> Arbol_R::buscar_k_vecinos(Punto P, int k){
-    vector<Entrada_Hoja*> res;
-    return res;
+    priority_queue<Arbol_R::Entrada_Distancia, deque<Arbol_R::Entrada_Distancia>, greater<Arbol_R::Entrada_Distancia>> knn_lista;
+    for(int i = 0; i<raiz->entradas.size(); i++){
+        knn_lista.push({raiz->entradas[i], P, raiz->hoja});
+    }
+
+    vector<Entrada_Hoja*> resultados;
+    while(resultados.size() < k && !knn_lista.empty()){
+        if(knn_lista.top().tupla){
+            resultados.push_back(dynamic_cast<Entrada_Hoja*>(knn_lista.top().entrada));
+            knn_lista.pop();
+        }
+        else{
+            Entrada_Interna* ET = dynamic_cast<Entrada_Interna*>(knn_lista.top().entrada);
+            knn_lista.pop();
+            for(int i = 0; i<ET->puntero_hijo->entradas.size(); i++)
+                knn_lista.push({ET->puntero_hijo->entradas[i], P, ET->puntero_hijo->hoja});
+        }
+    }
+    return resultados;
 }
 
 Nodo* Arbol_R::hallar_hoja(Nodo* E, Punto P){
