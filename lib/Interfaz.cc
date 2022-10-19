@@ -106,7 +106,7 @@ void Interfaz::eliminar(sf::Event &event)
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            arbol_r->eliminar({coordenada.first, coordenada.second});
+            arbol_r->eliminar_cercano({coordenada.first, coordenada.second});
         }
         return;
     }
@@ -166,15 +166,16 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            vector<Entrada_Hoja*> k_vecinos = arbol_r->buscar_k_vecinos({coordenada.first, coordenada.second}, k);
+            vector<Arbol_R::Entrada_Distancia> k_vecinos = arbol_r->buscar_k_vecinos({coordenada.first, coordenada.second}, k);
             for(auto i: k_vecinos){
                 double pm_x=0, pm_y=0;
-                for(auto p: i->tuplas){
+                Entrada_Hoja* iEH = dynamic_cast<Entrada_Hoja*>(i.entrada);
+                for(auto p: iEH->tuplas){
                     pm_x+=p.x;
                     pm_y+=p.y;
                 }
-                pm_x/=i->tuplas.size();
-                pm_y/=i->tuplas.size();
+                pm_x/=iEH->tuplas.size();
+                pm_y/=iEH->tuplas.size();
                 
                 linea[1] = sf::Vector2f(static_cast<int>(pm_x), window.getSize().y - static_cast<int>(pm_y));
                 linea[1].color = sf::Color::Green;

@@ -8,6 +8,7 @@
 #include<deque>
 #include<queue>
 #include<cmath>
+#include<stack>
 
 #include"Nodo.h"
 #include"Entrada_Hoja.h"
@@ -23,17 +24,19 @@ struct Interfaz;
 
 class Arbol_R{
 public:
+    struct Entrada_Distancia;
     Arbol_R();
     void insertar(vector<Punto> Ps);
     void eliminar(Punto P);
-    vector<Entrada_Hoja*> buscar_k_vecinos(Punto P, int k);
-protected:
+    void eliminar_cercano(Punto P);
+    vector<Entrada_Distancia> buscar_k_vecinos(Punto P, int k);
     struct Entrada_Distancia{
-        Entrada_Distancia(Entrada* E, Punto P, bool T);
+        Entrada_Distancia(Entrada* E, Punto P, Nodo* N);
         Entrada* entrada;
         double distancia;
-        bool tupla;
+        Nodo* tupla;
     };
+protected:
     friend bool operator<(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
     friend bool operator>(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
     friend bool operator<=(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
@@ -44,6 +47,8 @@ protected:
     Nodo* ajustar_arbol(Nodo *L , Nodo* LL);
     Nodo* hallar_hoja(Nodo* E, Punto P);
     void condensar(Nodo* &H, deque<Nodo*> &NE);
+    void condensar_cercano(Nodo* L);
+    void insercion_recursiva(Nodo* N);
 private:
     static bool comparar_x(Entrada* a, Entrada* b);
     static bool comparar_y(Entrada* a, Entrada* b);

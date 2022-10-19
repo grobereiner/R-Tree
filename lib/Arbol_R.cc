@@ -1,5 +1,7 @@
 #include "../include/Arbol_R.h"
 
+
+
 bool Arbol_R::comparar_x(Entrada *a, Entrada *b) {
     if(a->intervalos[0].i1 < b->intervalos[0].i1){
         if(a->intervalos[0].i2 <= b->intervalos[0].i2)
@@ -245,8 +247,8 @@ bool operator>=(const Arbol_R::Entrada_Distancia &pd1, const Arbol_R::Entrada_Di
     return pd1.distancia>=pd2.distancia;
 }
 
-Arbol_R::Entrada_Distancia::Entrada_Distancia(Entrada* E, Punto P, bool T): entrada(E), tupla(T){
-    if(!T){
+Arbol_R::Entrada_Distancia::Entrada_Distancia(Entrada* E, Punto P, Nodo* N): entrada(E), tupla(N){
+    if(!N->hoja){
         if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2 && P.y >= E->intervalos[1].i1 && P.y <= E->intervalos[1].i2)
             distancia = 0;
         else if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2)
@@ -282,23 +284,23 @@ Arbol_R::Entrada_Distancia::Entrada_Distancia(Entrada* E, Punto P, bool T): entr
     }
 }
 
-vector<Entrada_Hoja*> Arbol_R::buscar_k_vecinos(Punto P, int k){
+vector<Arbol_R::Entrada_Distancia> Arbol_R::buscar_k_vecinos(Punto P, int k){
     priority_queue<Arbol_R::Entrada_Distancia, deque<Arbol_R::Entrada_Distancia>, greater<Arbol_R::Entrada_Distancia>> knn_lista;
     for(int i = 0; i<raiz->entradas.size(); i++){
-        knn_lista.push({raiz->entradas[i], P, raiz->hoja});
+        knn_lista.push({raiz->entradas[i], P, raiz});
     }
 
-    vector<Entrada_Hoja*> resultados;
+    vector<Arbol_R::Entrada_Distancia> resultados;
     while(resultados.size() < k && !knn_lista.empty()){
-        if(knn_lista.top().tupla){
-            resultados.push_back(dynamic_cast<Entrada_Hoja*>(knn_lista.top().entrada));
+        if(knn_lista.top().tupla->hoja){
+            resultados.push_back(knn_lista.top());
             knn_lista.pop();
         }
         else{
             Entrada_Interna* ET = dynamic_cast<Entrada_Interna*>(knn_lista.top().entrada);
             knn_lista.pop();
             for(int i = 0; i<ET->puntero_hijo->entradas.size(); i++)
-                knn_lista.push({ET->puntero_hijo->entradas[i], P, ET->puntero_hijo->hoja});
+                knn_lista.push({ET->puntero_hijo->entradas[i], P, ET->puntero_hijo});
         }
     }
     return resultados;
@@ -392,6 +394,84 @@ void Arbol_R::condensar(Nodo* &H, deque<Nodo*> &NE){
                     this->ajustar_arbol(dynamic_cast<Entrada_Interna*>(NE_ent)->puntero_hijo->padre, NE[i]);
                 }
             }
+        }
+    }
+}
+
+void Arbol_R::eliminar_cercano(Punto P){
+    // D1
+    Arbol_R::Entrada_Distancia cerca = buscar_k_vecinos(P, 1)[0];
+    Entrada* E = cerca.entrada;
+    Nodo* L = cerca.tupla;
+
+    // D2
+    for(int i = 0; i<L->entradas.size(); i++){
+        if(L->entradas[i] == E){
+            L->entradas.erase(next(L->entradas.begin(), i));
+            break;
+        }
+    }
+
+    // D3
+    condensar_cercano(L);
+
+    // D4
+    if(raiz->entradas.size() == 1){
+        raiz = dynamic_cast<Entrada_Interna*>(raiz->entradas[0])->puntero_hijo;
+        raiz->padre = nullptr;
+    }
+}
+
+void Arbol_R::condensar_cercano(Nodo* L){
+    // CT1
+    Nodo* N = L;
+    vector<Nodo*> Q;
+    // CT2
+    while(N != raiz){
+        Nodo* P = N->padre;
+        int E_N;
+        bool eliminado = false;
+        for(int i = 0; i<P->entradas.size(); i++){
+            if(dynamic_cast<Entrada_Interna*>(P->entradas[i])->puntero_hijo == N){
+                E_N = i;
+                break;
+            }
+        }
+        // CT3
+        if(N->entradas.size() < m){
+            P->entradas.erase(next(P->entradas.begin(), E_N));
+            eliminado = true;
+            Q.push_back(N);
+        }
+        // CT4
+        if(!eliminado){
+            P->entradas[E_N]->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
+            P->entradas[E_N]->intervalos[1] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
+            for(Entrada *e: N->entradas){
+                P->entradas[E_N]->intervalos[0].i1 = min(P->entradas[E_N]->intervalos[0].i1, e->intervalos[0].i1);
+                P->entradas[E_N]->intervalos[1].i1 = min(P->entradas[E_N]->intervalos[1].i1, e->intervalos[1].i1);
+                P->entradas[E_N]->intervalos[0].i2 = max(P->entradas[E_N]->intervalos[0].i2, e->intervalos[0].i2);
+                P->entradas[E_N]->intervalos[1].i2 = max(P->entradas[E_N]->intervalos[1].i2, e->intervalos[1].i2);
+            }
+        }
+        // CT5
+        N = P;
+    }
+    // CT6
+    for(int i = 0; i<Q.size(); i++){
+        insercion_recursiva(Q[i]);
+    }
+}
+
+void Arbol_R::insercion_recursiva(Nodo* N){
+    if(N->hoja){
+        for(auto *e: N->entradas){
+            this->insertar(dynamic_cast<Entrada_Hoja*>(e)->tuplas);
+        }
+    }
+    else{
+        for(auto *e: N->entradas){
+            this->insercion_recursiva(dynamic_cast<Entrada_Interna*>(e)->puntero_hijo);
         }
     }
 }
