@@ -58,14 +58,20 @@ void Interfaz::ingresar_poligono(sf::Event &event)
             return;
         }
         
-        if (event.type != sf::Event::MouseButtonPressed)
-            continue;
+        // if (event.type != sf::Event::MouseButtonPressed)
+        //     continue;
+
+        if((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::P)){
+            if (coordenadas.size() > 2)
+                arbol_r->insertar(coordenadas);
+            return;
+        }
 
         if (event.mouseButton.button == sf::Mouse::Left)
         {
             sf::Vector2i localPosition = sf::Mouse::getPosition(window);
             pair<int, int> coordenada = {localPosition.x, int(window.getSize().y) - localPosition.y};
-            if (!inside_canvas(coordenada))
+            if (!inside_canvas(coordenada) )
             {
                 if (coordenadas.size() > 2)
                     arbol_r->insertar(coordenadas);
