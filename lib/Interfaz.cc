@@ -138,7 +138,7 @@ void Interfaz::eventos()
 }
 
 void Interfaz::buscar_k_coordenadas(sf::Event& event){
-    int k {3};
+    int k {};
     cout<<"BUSQUEDA DE "<<k<<" VECINOS:"<<endl;
     while (window.isOpen())
     {
@@ -149,6 +149,17 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
             window.close();
             return;
         }
+
+        if(event.type == sf::Event::TextEntered){
+            char numero = static_cast<char>(event.text.unicode);
+            if(numero >= '0' && numero <= '9'){
+                k*=10;
+                k+=(numero-'0');
+            }
+            std::cout<<k<<std::endl;
+        }
+        
+        if(k<1) continue;
 
         if (event.type != sf::Event::MouseButtonPressed)
             continue;
