@@ -1,9 +1,12 @@
-#include "../../include/Interfaz/Interfaz.h"
+#include "../include/Interfaz.h"
 
 Interfaz::Interfaz(int wc, int hc, int we)
-    : width_canvas(wc), height_canvas(hc), width_ext(we)
+    : width_canvas(wc), height_canvas(hc), width_ext(we), arbol_r(new Arbol_R)
 {
     window.create(sf::VideoMode(width_canvas + width_ext, height_canvas), "R-TREE");
+    if(!font.loadFromFile("../res/font/LemonMilk.otf")){
+        cout<<"NO HUBO CARGA DE FUENTE"<<endl;
+    }
 }
 
 bool Interfaz::inside_canvas(pair<int, int> coordenada)
@@ -35,7 +38,7 @@ void Interfaz::ingresar_coordenada(sf::Event &event)
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            arbolito.insercion(coordenada);
+            arbol_r->insertar({{coordenada.first, coordenada.second}});
         }
         return;
     }
@@ -44,7 +47,7 @@ void Interfaz::ingresar_coordenada(sf::Event &event)
 void Interfaz::ingresar_poligono(sf::Event &event)
 {
     cout << "INSERCION DE POLIGONO:" << endl;
-    vector<pair<int, int>> coordenadas;
+    vector<Punto> coordenadas;
     while (window.isOpen())
     {
         if (!window.pollEvent(event))
@@ -65,11 +68,11 @@ void Interfaz::ingresar_poligono(sf::Event &event)
             if (!inside_canvas(coordenada))
             {
                 if (coordenadas.size() > 2)
-                    arbolito.insercion(coordenadas);
+                    arbol_r->insertar(coordenadas);
                 return;
             }
 
-            coordenadas.push_back(coordenada);
+            coordenadas.push_back({coordenada.first, coordenada.second});
             cout << coordenada.first << '\t' << coordenada.second << endl;
 
             // Visualizar como se esta creando el poligono
@@ -103,7 +106,7 @@ void Interfaz::eliminar(sf::Event &event)
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            arbolito.eliminacion(coordenada);
+            arbol_r->eliminar({coordenada.first, coordenada.second});
         }
         return;
     }
@@ -163,9 +166,9 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            vector<pair<int,int>> k_vecinos = arbolito.buscar_k_vecinos(coordenada, k);
+            vector<Entrada_Hoja*> k_vecinos = arbol_r->buscar_k_vecinos({coordenada.first, coordenada.second}, k);
             for(auto i: k_vecinos){
-                linea[1] = sf::Vector2f(i.first, window.getSize().y - i.second);
+                linea[1] = sf::Vector2f(i->tuplas[0].x, window.getSize().y - i->tuplas[0].y);
                 linea[1].color = sf::Color::Green;
                 // cout<<linea[1].position.x<<"  "<<linea[1].position.y<<endl;
                 window.draw(linea, 2, sf::Lines);
@@ -207,7 +210,80 @@ void Interfaz::ejecutar()
 
         window.clear();
         this->marco();
-        arbolito.print_sfml(window);
+        imprimir_arbol_r();
         window.display();
     }
+}
+
+void Interfaz::imprimir_arbol_r(){
+    int espacio{10};
+    imprimir_arbol_r_recursivo(arbol_r->raiz, espacio);
+}
+
+void Interfaz::imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio){
+    if(nodo->hoja){
+        for(auto i: nodo->entradas){
+            Entrada_Hoja* eh = dynamic_cast<Entrada_Hoja*>(i);
+            if(eh->tuplas.size() == 1){
+                sf::CircleShape coordenada;
+                coordenada.setRadius(4);
+                coordenada.setFillColor(sf::Color::Red);
+                coordenada.setPosition(eh->tuplas[0].x - 2, window.getSize().y - eh->tuplas[0].y - 2);
+                window.draw(coordenada);
+
+                // Imprimir coordendas
+                sf::Text text;
+                text.setFont(font);
+                text.setString("Punto: "+tupla_string(eh->tuplas[0]));
+                text.setCharacterSize(10);
+                text.setFillColor(sf::Color::White);
+                text.setPosition(sf::Vector2f(window.getSize().x*7.f/10.f, window.getSize().y/10 + espacio));
+                window.draw(text);
+                espacio += 13;
+            }
+            else
+            {
+                sf::ConvexShape convex;
+                string polygon_coords;
+                convex.setPointCount(eh->tuplas.size());
+                for (int j = 0; j < eh->tuplas.size(); j++)
+                {
+                    convex.setPoint(j, sf::Vector2f(eh->tuplas[j].x, window.getSize().y - eh->tuplas[j].y));
+                    polygon_coords = polygon_coords + tupla_string(eh->tuplas[j]) + '\t';
+                }
+                convex.setFillColor(sf::Color::Blue);
+                window.draw(convex);
+
+                // sdfsfs
+                sf::Text text;
+                text.setFont(font);
+                text.setString("Poligono: "+polygon_coords);
+                text.setCharacterSize(10);
+                text.setFillColor(sf::Color::White);
+                text.setPosition(sf::Vector2f(window.getSize().x*7.f/10.f, window.getSize().y/10 + espacio));
+                window.draw(text);
+                espacio += 13;
+            }
+        }
+    }
+    else
+    {
+        for (auto i : nodo->entradas)
+        {
+            int dx = i->intervalos[0].i2 - i->intervalos[0].i1;
+            int dy = i->intervalos[1].i2 - i->intervalos[1].i1;
+            sf::RectangleShape rectangulo(sf::Vector2f(dx, dy));
+            rectangulo.setOutlineColor(sf::Color::White);
+            rectangulo.setOutlineThickness(2);
+            rectangulo.setPosition(i->intervalos[0].i1, window.getSize().y - i->intervalos[1].i2);
+            rectangulo.setFillColor(sf::Color::Transparent);
+
+            window.draw(rectangulo);
+            imprimir_arbol_r_recursivo(dynamic_cast<Entrada_Interna*>(i)->puntero_hijo, espacio);
+        }
+    }
+}
+
+string Interfaz::tupla_string(Punto llave_tupla){
+    return "("+to_string(llave_tupla.x)+", "+to_string(llave_tupla.y)+")";
 }

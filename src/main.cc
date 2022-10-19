@@ -1,4 +1,4 @@
-#include "../include/Interfaz/Interfaz.h"
+#include "../include/Interfaz.h"
 
 int main()
 {

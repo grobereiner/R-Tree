@@ -4,9 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include <utility>
 #include <iostream>
-#include "../R_Entidades/R_Tree.h"
+#include "Arbol_R.h"
 
 using namespace std;
+
+class Arbol_R;
 
 /**
  * @brief Contiene los objetos SFML y la estructura R-Tree para representar una interfaz gráfica
@@ -39,12 +41,16 @@ protected:
 
 private:
     bool inside_canvas(pair<int, int> coordenada);
+    void imprimir_arbol_r();
+    void imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio);
+    string tupla_string(Punto llave_tupla);
 
-    R_Tree arbolito;
+    Arbol_R *arbol_r;
     sf::RenderWindow window;
     int width_canvas;
     int height_canvas;
     int width_ext;
+    sf::Font font;
 };
 
 #endif
