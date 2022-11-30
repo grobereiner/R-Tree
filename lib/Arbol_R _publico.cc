@@ -1,0 +1,249 @@
+#include "../include/Arbol_R.h"
+
+bool Arbol_R::buscar_exacto(const vector<Punto>& Ps){
+    Intervalo rectangulo[2]{{numeric_limits<int>::max(), numeric_limits<int>::min()}, {numeric_limits<int>::max(), numeric_limits<int>::min()}};
+    for(int i = 0; i<Ps.size(); i++){
+        rectangulo[0].i1 = min(rectangulo[0].i1, Ps[i].x);
+        rectangulo[1].i1 = min(rectangulo[1].i1, Ps[i].y);
+        rectangulo[0].i2 = max(rectangulo[0].i2, Ps[i].x);
+        rectangulo[1].i2 = max(rectangulo[1].i2, Ps[i].y);
+    }
+
+    queue<Nodo*> cola;
+    cola.push(raiz);
+    while(!cola.empty()){
+        if(cola.front()->hoja){
+            for(Entrada* e: cola.front()->entradas){
+                Entrada_Hoja* et = dynamic_cast<Entrada_Hoja*>(e);
+                if(Ps.size() != et->tuplas.size()){
+                    continue;
+                }
+
+                bool iguales = true;
+                for (int i_punto = 0; i_punto < Ps.size(); i_punto++){
+                    if(Ps[i_punto].x != et->tuplas[i_punto].x || Ps[i_punto].y != et->tuplas[i_punto].y){
+                        iguales = false;
+                        break;
+                    }
+                }
+                if(iguales){
+                    return true;
+                }                
+            }
+        }
+        else{
+            for(Entrada* e: cola.front()->entradas){
+                Entrada_Interna* et = dynamic_cast<Entrada_Interna*>(e);
+                if(et->intervalos[0].i1 > rectangulo->i1 || et->intervalos[0].i2 < rectangulo->i2){
+                    continue;
+                }
+                if(et->intervalos[1].i1 > rectangulo->i1 || et->intervalos[1].i2 < rectangulo->i2){
+                    continue;
+                }
+                cola.push(et->puntero_hijo);
+            }
+        }
+        cola.pop();
+    }
+    return false;
+}
+
+void nodo_entradas(Arbol_R* a){
+    int n_nodos = 0, n_entradas = 0;
+    function<void(Nodo*)> F = [&F, &n_nodos, &n_entradas](Nodo* N){
+        n_nodos++;
+        if(!N->hoja){
+            for(Entrada* e: N->entradas){
+                Entrada_Interna* ei = dynamic_cast<Entrada_Interna*>(e);
+                F(ei->puntero_hijo);
+            }
+        }
+        else
+            n_entradas += N->entradas.size();
+    };
+    F(a->raiz);
+    cout<<n_nodos<<'\t'<<n_entradas<<endl;
+}
+
+Arbol_R::Arbol_R():raiz(new Nodo{true, nullptr}), objetos(0) {}
+
+Arbol_R::~Arbol_R(){
+    destruir_recursivo(raiz);
+}
+
+void Arbol_R::insertar(vector<Punto> Ps) {
+    Entrada_Hoja *E = new Entrada_Hoja{Ps};
+    // I1
+    Nodo* L = this->escoger_hoja(E);
+    Nodo* LL = nullptr;
+    // I2
+    if(L->entradas.size() < M)
+        L->entradas.push_back(E);
+    else
+        LL = this->partir_nodo(E, L);
+
+    // I3
+    Nodo* partir_raiz = this->ajustar_arbol(L, LL);
+
+    // I4
+    if(partir_raiz != nullptr){
+        Nodo* raiz_temp = raiz;
+        raiz = new Nodo{false, nullptr};
+        Entrada_Interna* e_raiz_temp = new Entrada_Interna, *e_partir_raiz = new Entrada_Interna;
+
+        e_raiz_temp->puntero_hijo = raiz_temp;
+        e_raiz_temp->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
+        e_raiz_temp->intervalos[1] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
+
+        e_partir_raiz->puntero_hijo = partir_raiz;
+        e_partir_raiz->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
+        e_partir_raiz->intervalos[1] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
+
+        for (Entrada *e: raiz_temp->entradas) {
+            e_raiz_temp->intervalos[0].i1 = min(e_raiz_temp->intervalos[0].i1, e->intervalos[0].i1);
+            e_raiz_temp->intervalos[1].i1 = min(e_raiz_temp->intervalos[1].i1, e->intervalos[1].i1);
+            e_raiz_temp->intervalos[0].i2 = max(e_raiz_temp->intervalos[0].i2, e->intervalos[0].i2);
+            e_raiz_temp->intervalos[1].i2 = max(e_raiz_temp->intervalos[1].i2, e->intervalos[1].i2);
+        }
+
+        for (Entrada *e: partir_raiz->entradas) {
+            e_partir_raiz->intervalos[0].i1 = min(e_partir_raiz->intervalos[0].i1, e->intervalos[0].i1);
+            e_partir_raiz->intervalos[1].i1 = min(e_partir_raiz->intervalos[1].i1, e->intervalos[1].i1);
+            e_partir_raiz->intervalos[0].i2 = max(e_partir_raiz->intervalos[0].i2, e->intervalos[0].i2);
+            e_partir_raiz->intervalos[1].i2 = max(e_partir_raiz->intervalos[1].i2, e->intervalos[1].i2);
+        }
+
+        partir_raiz->padre = raiz;
+        raiz_temp->padre = raiz;
+        raiz->entradas.push_back(e_raiz_temp);
+        raiz->entradas.push_back(e_partir_raiz);
+    }
+
+    objetos++;
+}
+
+void Arbol_R::eliminar(Punto P){
+
+    // D1
+    Nodo * H= hallar_hoja(raiz, P);
+    if(H == nullptr)
+        return;
+
+    // D2 remover la coordenada o poligono que contiene la coordenada
+    for (int i = 0; i < H->entradas.size(); i++)
+    {
+        Entrada_Hoja* EH = dynamic_cast<Entrada_Hoja*>(H->entradas[i]);
+
+        ///////
+        if (EH->tuplas.size() > 1)
+        {
+            if (!EH->dentro(P))
+                continue;
+            EH->tuplas.erase(next(EH->tuplas.begin(), i));
+            break;
+        }
+
+        ///////
+        bool en_x, en_y;
+        en_x = P.x + RADIO >= EH->tuplas[0].x && P.x - RADIO <= EH->tuplas[0].x;
+        en_y = P.y + RADIO >= EH->tuplas[0].y && P.y - RADIO <= EH->tuplas[0].y;
+        if (!(en_x && en_y))
+            continue;
+        EH->tuplas.erase(next(EH->tuplas.begin(), i));
+        break;
+    }
+
+    // D3 Condensar arbol
+    deque<Nodo *> nodos_eliminados;
+    condensar(H, nodos_eliminados);
+
+    // D4 verificar si raiz tiene solo un hijo
+    if (!raiz->hoja && raiz->entradas.size() == 1)
+    {
+        raiz = dynamic_cast<Entrada_Interna*>(raiz->entradas[0])->puntero_hijo;
+        raiz->padre = nullptr;
+    }
+}
+
+Arbol_R::Distante::Distante(Entrada* E, Punto P, Nodo* N): entrada(E), tupla(N){
+    if(!N->hoja){
+        if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2 && P.y >= E->intervalos[1].i1 && P.y <= E->intervalos[1].i2)
+            distancia = 0;
+        else if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2)
+            distancia = min(abs(P.y-E->intervalos[1].i1), abs(P.y-E->intervalos[1].i2));
+        else if(P.y >= E->intervalos[1].i1 && P.y <= E->intervalos[1].i2)
+            distancia = min(abs(P.x-E->intervalos[0].i1), abs(P.x-E->intervalos[0].i2));
+        else{
+            distancia = min(
+                sqrt(pow(P.y-E->intervalos[1].i1,2)+pow(P.x-E->intervalos[0].i1,2)), 
+                min(
+                    sqrt(pow(P.y-E->intervalos[1].i2,2)+pow(P.x-E->intervalos[0].i1,2)), 
+                    min(
+                        sqrt(pow(P.y-E->intervalos[1].i1,2)+pow(P.x-E->intervalos[0].i2,2)), 
+                        sqrt(pow(P.y-E->intervalos[1].i2,2)+pow(P.x-E->intervalos[0].i2,2))))
+                );
+        }
+    }
+    else{
+        Entrada_Hoja* EH = dynamic_cast<Entrada_Hoja*>(E);
+        if(EH->tuplas.size() == 1){
+            distancia = sqrt(pow(P.x-EH->tuplas[0].x,2)+pow(P.y-EH->tuplas[0].y,2));
+        }
+        else{
+            double pm_x=0, pm_y=0;
+            for(auto p: EH->tuplas){
+                pm_x+=p.x;
+                pm_y+=p.y;
+            }
+            pm_x/=EH->tuplas.size();
+            pm_y/=EH->tuplas.size();
+            distancia = sqrt(pow(P.x-pm_x,2)+pow(P.y-pm_y,2));
+        }
+    }
+}
+
+vector<Arbol_R::Distante> Arbol_R::buscar_k_vecinos(Punto P, int k){
+    priority_queue<Arbol_R::Distante, deque<Arbol_R::Distante>, greater<Arbol_R::Distante>> knn_lista;
+    for(int i = 0; i<raiz->entradas.size(); i++){
+        knn_lista.push({raiz->entradas[i], P, raiz});
+    }
+
+    vector<Arbol_R::Distante> resultados;
+    while(resultados.size() < k && !knn_lista.empty()){
+        if(knn_lista.top().tupla->hoja){
+            resultados.push_back(knn_lista.top());
+            knn_lista.pop();
+        }
+        else{
+            Entrada_Interna* ET = dynamic_cast<Entrada_Interna*>(knn_lista.top().entrada);
+            knn_lista.pop();
+            for(int i = 0; i<ET->puntero_hijo->entradas.size(); i++)
+                knn_lista.push({ET->puntero_hijo->entradas[i], P, ET->puntero_hijo});
+        }
+    }
+    return resultados;
+}
+
+void Arbol_R::eliminar_cercano(Punto P){
+    // D1
+    Arbol_R::Distante cerca = buscar_k_vecinos(P, 1)[0];
+    Entrada* E = cerca.entrada;
+    Nodo* L = cerca.tupla;
+
+    // D2
+    for(int i = 0; i<L->entradas.size(); i++){
+        if(L->entradas[i] == E){
+            L->entradas.erase(next(L->entradas.begin(), i));
+            break;
+        }
+    }
+
+    // D3
+    condensar_cercano(L);
+
+    // D4
+    if(raiz->entradas.size() == 1 && !raiz->hoja){
+        raiz = dynamic_cast<Entrada_Interna*>(raiz->entradas[0])->puntero_hijo;
+        raiz->padre = nullptr;
+    }
+}

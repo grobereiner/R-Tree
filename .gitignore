@@ -1,3 +1,5 @@
 /.vscode
 /basura
 /src/main
+/test/*.csv
+/test/test

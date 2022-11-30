@@ -1,5 +1,16 @@
 #include "../include/Interfaz.h"
 
+Interfaz::Interfaz()
+: arbol_r(new Arbol_R){
+    window.create(sf::VideoMode(N, N), "R-TREE");
+    if(!font.loadFromFile("../res/font/LemonMilk.otf")){
+        cout<<"NO HUBO CARGA DE FUENTE"<<endl;
+    }
+}
+void Interfaz::setArbol(Arbol_R *a){
+    arbol_r = a;
+}
+
 Interfaz::Interfaz(int wc, int hc, int we)
     : width_canvas(wc), height_canvas(hc), width_ext(we), arbol_r(new Arbol_R)
 {
@@ -183,7 +194,7 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
         if (inside_canvas(coordenada))
         {
             cout << coordenada.first << '\t' << coordenada.second << endl;
-            vector<Arbol_R::Entrada_Distancia> k_vecinos = arbol_r->buscar_k_vecinos({coordenada.first, coordenada.second}, k);
+            vector<Arbol_R::Distante> k_vecinos = arbol_r->buscar_k_vecinos({coordenada.first, coordenada.second}, k);
             for(auto i: k_vecinos){
                 double pm_x=0, pm_y=0;
                 Entrada_Hoja* iEH = dynamic_cast<Entrada_Hoja*>(i.entrada);
@@ -258,14 +269,14 @@ void Interfaz::imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio, int color){
                 window.draw(coordenada);
 
                 // Imprimir coordendas
-                sf::Text text;
-                text.setFont(font);
-                text.setString("Punto: "+tupla_string(eh->tuplas[0]));
-                text.setCharacterSize(10);
-                text.setFillColor(sf::Color::White);
-                text.setPosition(sf::Vector2f(window.getSize().x*7.f/10.f, window.getSize().y/10 + espacio));
-                window.draw(text);
-                espacio += 13;
+                // sf::Text text;
+                // text.setFont(font);
+                // text.setString("Punto: "+tupla_string(eh->tuplas[0]));
+                // text.setCharacterSize(10);
+                // text.setFillColor(sf::Color::White);
+                // text.setPosition(sf::Vector2f(window.getSize().x*7.f/10.f, window.getSize().y/10 + espacio));
+                // window.draw(text);
+                // espacio += 13;
             }
             else
             {
@@ -281,14 +292,14 @@ void Interfaz::imprimir_arbol_r_recursivo(Nodo* nodo, int &espacio, int color){
                 window.draw(convex);
 
                 // sdfsfs
-                sf::Text text;
-                text.setFont(font);
-                text.setString("Poligono: "+polygon_coords);
-                text.setCharacterSize(10);
-                text.setFillColor(sf::Color::White);
-                text.setPosition(sf::Vector2f(window.getSize().x*7.f/10.f, window.getSize().y/10 + espacio));
-                window.draw(text);
-                espacio += 13;
+                // sf::Text text;
+                // text.setFont(font);
+                // text.setString("Poligono: "+polygon_coords);
+                // text.setCharacterSize(10);
+                // text.setFillColor(sf::Color::White);
+                // text.setPosition(sf::Vector2f(window.getSize().x*7.f/10.f, window.getSize().y/10 + espacio));
+                // window.draw(text);
+                // espacio += 13;
             }
         }
     }

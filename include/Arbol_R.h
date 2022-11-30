@@ -8,6 +8,7 @@
 #include<deque>
 #include<queue>
 #include<cmath>
+#include<functional>
 #include<stack>
 
 #include"Nodo.h"
@@ -24,23 +25,25 @@ struct Interfaz;
 
 class Arbol_R{
 public:
-    struct Entrada_Distancia;
+    struct Distante;
     Arbol_R();
+    ~Arbol_R();
     void insertar(vector<Punto> Ps);
     void eliminar(Punto P);
     void eliminar_cercano(Punto P);
-    vector<Entrada_Distancia> buscar_k_vecinos(Punto P, int k);
-    struct Entrada_Distancia{
-        Entrada_Distancia(Entrada* E, Punto P, Nodo* N);
+    vector<Distante> buscar_k_vecinos(Punto P, int k);
+    struct Distante{
+        Distante(Entrada* E, Punto P, Nodo* N);
         Entrada* entrada;
         double distancia;
         Nodo* tupla;
     };
+    bool buscar_exacto(const vector<Punto>& Ps);
 protected:
-    friend bool operator<(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
-    friend bool operator>(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
-    friend bool operator<=(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
-    friend bool operator>=(const Entrada_Distancia &pd1, const Entrada_Distancia &pd2);
+    friend bool operator<(const Distante &pd1, const Distante &pd2);
+    friend bool operator>(const Distante &pd1, const Distante &pd2);
+    friend bool operator<=(const Distante &pd1, const Distante &pd2);
+    friend bool operator>=(const Distante &pd1, const Distante &pd2);
 
     Nodo* escoger_hoja(Entrada_Hoja *E);
     Nodo* partir_nodo(Entrada *E, Nodo *L);
@@ -50,10 +53,13 @@ protected:
     void condensar_cercano(Nodo* L);
     void insercion_recursiva(Nodo* N);
 private:
+    void destruir_recursivo(Nodo *N);
     static bool comparar_x(Entrada* a, Entrada* b);
     static bool comparar_y(Entrada* a, Entrada* b);
     Nodo* raiz;
+    int objetos;
 
+    friend void nodo_entradas(Arbol_R* a);
     friend class Interfaz;
 };
 

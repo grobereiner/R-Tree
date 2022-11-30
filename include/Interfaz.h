@@ -29,6 +29,9 @@ public:
      * @brief Ejecuta el renderizado del objeto sf::RenderWindow
      * 
      */
+
+    Interfaz();
+    void setArbol(Arbol_R *a);
     void ejecutar();
 
 protected:
