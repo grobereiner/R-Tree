@@ -1,5 +1,129 @@
 #include "../include/Arbol_R.h"
 
+double Arbol_R::obtener_sobrelapado_total(){
+    double area_total=0, area_sobrelapada=0;
+
+    set<int> seg_set_x, seg_set_y;
+
+    queue<Nodo*> cola_nodos;
+    cola_nodos.push(raiz);
+    while(!cola_nodos.empty()){
+        if(!cola_nodos.front()->hoja){
+            for(Entrada* e: cola_nodos.front()->entradas){
+                seg_set_x.insert(e->intervalos[0].i1);
+                seg_set_x.insert(e->intervalos[0].i2);
+                seg_set_y.insert(e->intervalos[1].i1);
+                seg_set_y.insert(e->intervalos[1].i2);
+                cola_nodos.push(dynamic_cast<Entrada_Interna*>(e)->puntero_hijo);
+            }
+        }
+        cola_nodos.pop();
+    }
+
+
+    //////
+    vector<int> segmento_x(seg_set_x.begin(), seg_set_x.end()), segmento_y(seg_set_y.begin(), seg_set_y.end());
+    vector<vector<int>> matriz(seg_set_x.size() - 1, vector<int>(seg_set_y.size() - 1, 0));
+
+    cola_nodos.push(raiz);
+    for(int ix = 1; ix<segmento_x.size(); ix++){
+        for(int iy = 1; iy<segmento_y.size(); iy++){
+            
+            while(!cola_nodos.empty()){
+                if(!cola_nodos.front()->hoja){
+                    for(Entrada* e: cola_nodos.front()->entradas){
+                        if(e->dentro(segmento_x[ix-1], segmento_y[iy-1]) && e->dentro(segmento_x[ix], segmento_y[iy])){
+                            matriz[ix-1][iy-1]++;
+                        }
+                    cola_nodos.push(dynamic_cast<Entrada_Interna*>(e)->puntero_hijo);
+                    }
+                }
+                cola_nodos.pop();
+            }
+        }
+    }
+    //////
+
+    for(int i = 0; i<segmento_x.size()-1; i++){
+        for(int j = 0; j<segmento_y.size()-1; j++){
+            if(matriz[i][j] > 1){
+                area_sobrelapada += (segmento_x[i+1]-segmento_x[i])*(segmento_y[j+1]-segmento_y[j]);
+            }
+            area_total += (segmento_x[i+1]-segmento_x[i])*(segmento_y[j+1]-segmento_y[j]);
+        }
+    }
+
+    return area_sobrelapada/area_total;
+}
+int Arbol_R::retornar_altura(){
+    int altura = 0;
+    Nodo* N = raiz;
+    while(!N->hoja){
+        N = dynamic_cast<Entrada_Interna*>(N->entradas.front())->puntero_hijo;
+        altura++;
+    }
+    return altura;
+}
+double Arbol_R::obtener_sobrelapado(int Nivel){
+    double area_total=0, area_sobrelapada=0;
+
+    priority_queue<pair<int, Nodo*>, vector<pair<int, Nodo*>>, greater<pair<int,Nodo*>>> desciende;
+    desciende.push({0,raiz});
+    while(desciende.top().first + 1 < Nivel){
+        Nodo* N = desciende.top().second;
+        int nivel_N = desciende.top().first;
+        desciende.pop();
+        for(Entrada* e: N->entradas){
+            desciende.push({nivel_N+1, dynamic_cast<Entrada_Interna*>(e)->puntero_hijo});
+        }
+    }
+
+    vector<Nodo*> nodos;
+    while(!desciende.empty()){
+        // cout<<desciende.top().first<<endl;
+        nodos.push_back(desciende.top().second);
+        desciende.pop();
+    }
+
+    // cout<<"NIVEL: "<<Nivel<<endl;
+    // cout<<"NUMERO DE NODOS: "<<nodos.size()<<endl;
+
+    set<int> seg_set_x, seg_set_y;
+    for(Nodo* n: nodos){
+        for(Entrada* e: n->entradas){
+            seg_set_x.insert(e->intervalos[0].i1);
+            seg_set_x.insert(e->intervalos[0].i2);
+            seg_set_y.insert(e->intervalos[1].i1);
+            seg_set_y.insert(e->intervalos[1].i2);
+        }
+    }
+    vector<int> segmento_x(seg_set_x.begin(), seg_set_x.end()), segmento_y(seg_set_y.begin(), seg_set_y.end());
+    vector<vector<int>> matriz(seg_set_x.size() - 1, vector<int>(seg_set_y.size() - 1, 0));
+
+    for(int ix = 1; ix<segmento_x.size(); ix++){
+        for(int iy = 1; iy<segmento_y.size(); iy++){
+            for(Nodo* n :nodos){
+                for(Entrada* e: n->entradas){
+                    if(e->dentro(segmento_x[ix-1], segmento_y[iy-1]) && e->dentro(segmento_x[ix], segmento_y[iy])){
+                        matriz[ix-1][iy-1]++;
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i<segmento_x.size()-1; i++){
+        for(int j = 0; j<segmento_y.size()-1; j++){
+            if(matriz[i][j] > 1){
+                area_sobrelapada += (segmento_x[i+1]-segmento_x[i])*(segmento_y[j+1]-segmento_y[j]);
+            }
+            area_total += (segmento_x[i+1]-segmento_x[i])*(segmento_y[j+1]-segmento_y[j]);
+        }
+    }
+
+    return area_sobrelapada/area_total;
+}
+
 bool Arbol_R::buscar_exacto(const vector<Punto>& Ps){
     Intervalo rectangulo[2]{{numeric_limits<int>::max(), numeric_limits<int>::min()}, {numeric_limits<int>::max(), numeric_limits<int>::min()}};
     for(int i = 0; i<Ps.size(); i++){

@@ -10,6 +10,7 @@
 #include<cmath>
 #include<functional>
 #include<stack>
+#include<set>
 
 #include"Nodo.h"
 #include"Entrada_Hoja.h"
@@ -39,6 +40,10 @@ public:
         Nodo* tupla;
     };
     bool buscar_exacto(const vector<Punto>& Ps);
+
+    double obtener_sobrelapado_total();
+    int retornar_altura();
+    double obtener_sobrelapado(int Nivel);
 protected:
     friend bool operator<(const Distante &pd1, const Distante &pd2);
     friend bool operator>(const Distante &pd1, const Distante &pd2);

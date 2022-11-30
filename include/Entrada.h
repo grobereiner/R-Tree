@@ -11,6 +11,7 @@ struct Intervalo;
 struct Entrada{
     Entrada();
     vector<Intervalo> intervalos;
+    bool dentro(int x, int y);
     virtual ~Entrada();
 };
 

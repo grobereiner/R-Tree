@@ -10,6 +10,38 @@ using namespace std::chrono;
 int x = N, y = N;
 random_device rd;
 
+vector<Punto> generar_poligono();
+
+static void sobrelapamiento(){
+    ofstream of("Solapamiento.csv", ofstream::out);
+    of<<"Total,Hoja\n";
+    // for(int t = 0; t<1; t++){
+    for(int t = 0; t<100; t++){
+        Arbol_R* a = new Arbol_R;
+
+        for(int b = 0; b<5000; b++){
+            a->insertar(generar_poligono());
+        }
+
+        of<<fixed<<a->obtener_sobrelapado_total()<<',';
+
+        int H = a->retornar_altura();
+        for(int h =H; h>=1; h--){
+            of<<fixed<<a->obtener_sobrelapado(h);
+            if(h >1 )
+                of<<',';
+        }
+
+
+        of<<'\n';
+
+        cout<<t+1<<endl;
+
+        delete a;
+    }
+    of.close();
+}
+
 vector<Punto> generar_poligono(){
     int l_lado = (x*(rd()%64 + 21))/10000.f;
     int n_lados = rd()%3 + 3;
@@ -189,6 +221,6 @@ void test_knn(){
 
 int main(int argc, char const *argv[])
 {
-    test_busqueda();
+    sobrelapamiento();
     return 0;
 }
