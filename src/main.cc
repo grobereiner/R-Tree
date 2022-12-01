@@ -2,7 +2,7 @@
 
 int main()
 {
-    Interfaz aplicacion(1600,1600,300);
+    Interfaz aplicacion(N,N,0);
     aplicacion.ejecutar();
 
     return 0;

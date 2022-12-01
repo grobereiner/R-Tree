@@ -22,6 +22,7 @@ Interfaz::Interfaz(int wc, int hc, int we)
 
 bool Interfaz::inside_canvas(pair<int, int> coordenada)
 {
+    return true;
     return coordenada.first > 0 && coordenada.second > 0 && coordenada.first < width_canvas && coordenada.second < height_canvas;
 }
 
@@ -231,13 +232,13 @@ void Interfaz::buscar_k_coordenadas(sf::Event& event){
     }
 }
 
-void Interfaz::marco(){
-    sf::RectangleShape rect(sf::Vector2f(width_canvas, height_canvas));
-    rect.setOutlineColor(sf::Color::Magenta);
-    rect.setOutlineThickness(2);
-    rect.setFillColor(sf::Color::Transparent);
-    window.draw(rect);
-}
+// void Interfaz::marco(){
+//     sf::RectangleShape rect(sf::Vector2f(width_canvas, height_canvas));
+//     rect.setOutlineColor(sf::Color::Magenta);
+//     rect.setOutlineThickness(2);
+//     rect.setFillColor(sf::Color::Transparent);
+//     window.draw(rect);
+// }
 
 void Interfaz::ejecutar()
 {
@@ -246,7 +247,7 @@ void Interfaz::ejecutar()
         this->eventos();
 
         window.clear();
-        this->marco();
+        // this->marco();
         imprimir_arbol_r();
         window.display();
     }
