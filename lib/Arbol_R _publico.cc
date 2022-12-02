@@ -125,6 +125,7 @@ double Arbol_R::obtener_sobrelapado(int Nivel){
 }
 
 bool Arbol_R::buscar_exacto(const vector<Punto>& Ps){
+    // MBR del objeto a bsucar
     Intervalo rectangulo[2]{{numeric_limits<int>::max(), numeric_limits<int>::min()}, {numeric_limits<int>::max(), numeric_limits<int>::min()}};
     for(int i = 0; i<Ps.size(); i++){
         rectangulo[0].i1 = min(rectangulo[0].i1, Ps[i].x);
@@ -133,11 +134,16 @@ bool Arbol_R::buscar_exacto(const vector<Punto>& Ps){
         rectangulo[1].i2 = max(rectangulo[1].i2, Ps[i].y);
     }
 
+    // Busqeuda con cola
     queue<Nodo*> cola;
     cola.push(raiz);
+    // Mientras no haya cola vacía
     while(!cola.empty()){
+        // Si el nodo de la cola es hoja
         if(cola.front()->hoja){
+            // Iterar por todas sus entradas
             for(Entrada* e: cola.front()->entradas){
+                // Verificar que el objeto sea igual
                 Entrada_Hoja* et = dynamic_cast<Entrada_Hoja*>(e);
                 if(Ps.size() != et->tuplas.size()){
                     continue;
@@ -155,15 +161,19 @@ bool Arbol_R::buscar_exacto(const vector<Punto>& Ps){
                 }                
             }
         }
+        // Si es nodo interno
         else{
+            // Iterar por entradas internas
             for(Entrada* e: cola.front()->entradas){
                 Entrada_Interna* et = dynamic_cast<Entrada_Interna*>(e);
+                // determinar si el MBR del objeto está dentro del mbr del nodo interno
                 if(et->intervalos[0].i1 > rectangulo->i1 || et->intervalos[0].i2 < rectangulo->i2){
                     continue;
                 }
                 if(et->intervalos[1].i1 > rectangulo->i1 || et->intervalos[1].i2 < rectangulo->i2){
                     continue;
                 }
+                // Encolar los nodos hijos
                 cola.push(et->puntero_hijo);
             }
         }
@@ -172,6 +182,7 @@ bool Arbol_R::buscar_exacto(const vector<Punto>& Ps){
     return false;
 }
 
+// FUNCION DEPRECADA
 void nodo_entradas(Arbol_R* a){
     int n_nodos = 0, n_entradas = 0;
     function<void(Nodo*)> F = [&F, &n_nodos, &n_entradas](Nodo* N){
@@ -189,32 +200,46 @@ void nodo_entradas(Arbol_R* a){
     cout<<n_nodos<<'\t'<<n_entradas<<endl;
 }
 
+
 Arbol_R::Arbol_R():raiz(new Nodo{true, nullptr}), objetos(0) {}
 
 Arbol_R::~Arbol_R(){
+    // llamar la recursividad para liberar memoria dinamica desde la raiz
     destruir_recursivo(raiz);
 }
 
 void Arbol_R::insertar(vector<Punto> Ps) {
+    // Convertir a entrada hoja
     Entrada_Hoja *E = new Entrada_Hoja{Ps};
     // I1
+    // Escoger el nodo apropiado
     Nodo* L = this->escoger_hoja(E);
+    // Definir lo que podría ser el nodo particionado
     Nodo* LL = nullptr;
     // I2
+    // Si no hay overflow
     if(L->entradas.size() < M)
+        // insertar al contenedor
         L->entradas.push_back(E);
     else
+        // Splitear
         LL = this->partir_nodo(E, L);
 
     // I3
+    // Insertar y ajustar en nodos superiores
     Nodo* partir_raiz = this->ajustar_arbol(L, LL);
 
     // I4
+    // Si la raiz fue partida
     if(partir_raiz != nullptr){
+        // Holdear valores antiguos de la raiz
         Nodo* raiz_temp = raiz;
+        // Nueva raiz
         raiz = new Nodo{false, nullptr};
+        // Entradas para la antigua raiz y su particion
         Entrada_Interna* e_raiz_temp = new Entrada_Interna, *e_partir_raiz = new Entrada_Interna;
 
+        // ---- Obtener sus interevalos
         e_raiz_temp->puntero_hijo = raiz_temp;
         e_raiz_temp->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
         e_raiz_temp->intervalos[1] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
@@ -236,16 +261,21 @@ void Arbol_R::insertar(vector<Punto> Ps) {
             e_partir_raiz->intervalos[0].i2 = max(e_partir_raiz->intervalos[0].i2, e->intervalos[0].i2);
             e_partir_raiz->intervalos[1].i2 = max(e_partir_raiz->intervalos[1].i2, e->intervalos[1].i2);
         }
+        // ------ 
 
+        // Definir padres
         partir_raiz->padre = raiz;
         raiz_temp->padre = raiz;
+        // agregar al contenedor d ela nueva raiz
         raiz->entradas.push_back(e_raiz_temp);
         raiz->entradas.push_back(e_partir_raiz);
     }
 
+    //Aumentar objetos
     objetos++;
 }
 
+// ELINIACION DEPRECADA
 void Arbol_R::eliminar(Punto P){
 
     // D1
@@ -289,7 +319,9 @@ void Arbol_R::eliminar(Punto P){
     }
 }
 
+// Constructor de Objeto KNN
 Arbol_R::Distante::Distante(Entrada* E, Punto P, Nodo* N): entrada(E), tupla(N){
+    // Calcular la distancia euclideana de un punto hacia la entrada
     if(!N->hoja){
         if(P.x >= E->intervalos[0].i1 && P.x <= E->intervalos[0].i2 && P.y >= E->intervalos[1].i1 && P.y <= E->intervalos[1].i2)
             distancia = 0;
@@ -327,29 +359,37 @@ Arbol_R::Distante::Distante(Entrada* E, Punto P, Nodo* N): entrada(E), tupla(N){
 }
 
 vector<Arbol_R::Distante> Arbol_R::buscar_k_vecinos(Punto P, int k){
+    // Cola de prioridad para objetos KNN
     priority_queue<Arbol_R::Distante, deque<Arbol_R::Distante>, greater<Arbol_R::Distante>> knn_lista;
+    // Encolar los objetos de la raiz
     for(int i = 0; i<raiz->entradas.size(); i++){
         knn_lista.push({raiz->entradas[i], P, raiz});
     }
 
     vector<Arbol_R::Distante> resultados;
+    // Mientras haya obejtos por buscar y mientras la lista no esté llena
     while(resultados.size() < k && !knn_lista.empty()){
+        // Si  es una entrada hoja, agregar a los resultados
         if(knn_lista.top().tupla->hoja){
             resultados.push_back(knn_lista.top());
             knn_lista.pop();
         }
+        // Si es entrada interan
         else{
             Entrada_Interna* ET = dynamic_cast<Entrada_Interna*>(knn_lista.top().entrada);
             knn_lista.pop();
+            // encolar todos sus hijos
             for(int i = 0; i<ET->puntero_hijo->entradas.size(); i++)
                 knn_lista.push({ET->puntero_hijo->entradas[i], P, ET->puntero_hijo});
         }
     }
+    // retornar los kNN
     return resultados;
 }
 
 void Arbol_R::eliminar_cercano(Punto P){
     // D1
+    // Hallar el 1-NN
     Arbol_R::Distante cerca = buscar_k_vecinos(P, 1)[0];
     Entrada* E = cerca.entrada;
     Nodo* L = cerca.tupla;
@@ -357,16 +397,20 @@ void Arbol_R::eliminar_cercano(Punto P){
     // D2
     for(int i = 0; i<L->entradas.size(); i++){
         if(L->entradas[i] == E){
+            // Eliminar la entrada del objeto cercano
             L->entradas.erase(next(L->entradas.begin(), i));
             break;
         }
     }
 
     // D3
+    // Arreglar los nodos superiores (underflow y reajuste de intervalos)
     condensar_cercano(L);
 
     // D4
+    // Si la raiz solo tiene un solo hijo
     if(raiz->entradas.size() == 1 && !raiz->hoja){
+        //  LA raiz será el  primer hijo
         raiz = dynamic_cast<Entrada_Interna*>(raiz->entradas[0])->puntero_hijo;
         raiz->padre = nullptr;
     }

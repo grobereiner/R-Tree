@@ -2,11 +2,15 @@
 
 Nodo* Arbol_R::ajustar_arbol(Nodo *L , Nodo *LL){
     // AT1
+    // DEFINIR VARIABLES
     Nodo *N = L, *NN = LL;
     // AT2
+    // MIENTRAS NO SE LLEGUE A LA RAIZ
     while(N != this->raiz) {
         // AT3
+        // Obtener el padre 
         Nodo *P = N->padre;
+        // Pasar por las entradas y reajustar MBRs
         for (Entrada *&E_N: P->entradas) {
             if (dynamic_cast<Entrada_Interna *>(E_N)->puntero_hijo == N) {
                 E_N->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
@@ -21,8 +25,11 @@ Nodo* Arbol_R::ajustar_arbol(Nodo *L , Nodo *LL){
             }
         }
         // AT4
+        // Posible partición del padre
         Nodo *PP = nullptr;
+        // SI hay una partición del nodo N
         if (NN != nullptr) {
+            //---- Volverlo entrada y calcular su MBR
             Entrada *E_NN = new Entrada_Interna;
             dynamic_cast<Entrada_Interna *>(E_NN)->puntero_hijo = NN;
             E_NN->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
@@ -33,14 +40,19 @@ Nodo* Arbol_R::ajustar_arbol(Nodo *L , Nodo *LL){
                 E_NN->intervalos[0].i2 = max(E_NN->intervalos[0].i2, e->intervalos[0].i2);
                 E_NN->intervalos[1].i2 = max(E_NN->intervalos[1].i2, e->intervalos[1].i2);
             }
+            // -----------
+
+            // Si no provoca overflow el padre, insertarlo
             if (P->entradas.size() < M) {
                 P->entradas.push_back(E_NN);
                 NN->padre = P;
             }
+            // Caso contrario, partir el nodo
             else
                 PP = partir_nodo(E_NN, P);
         }
 
+        // Subir un nivel, con el padre del nodo y la partición del padre como nuevo nivel base
         N = P;
         NN = PP;
     }
@@ -48,52 +60,71 @@ Nodo* Arbol_R::ajustar_arbol(Nodo *L , Nodo *LL){
 }
 
 Nodo* Arbol_R::partir_nodo(Entrada *E, Nodo *L) {
+
+    // DEFINIR SORT_SOPLIT
     Nodo* LL = new Nodo{L->hoja};
     vector<Entrada*> almacen = L->entradas;
+    // ALmacen temporal de netradas
     almacen.push_back(E);
 
+    // comparador de perimetro de distribuciones
     int perimetro_minimo = numeric_limits<int>::max();
 
+    // Ordenar por x
     sort(almacen.begin(), almacen.end(), comparar_x);
     for(int i = m; i<=M-m+1; i++){
+        // Obtener perimetros
         int distancia_x = abs(almacen[M]->intervalos[0].i2 - almacen[i]->intervalos[0].i1) + abs(almacen[i-1]->intervalos[0].i2 - almacen[0]->intervalos[0].i1);
         int distancia_y = abs(almacen[M]->intervalos[1].i2 - almacen[i]->intervalos[1].i1) + abs(almacen[i-1]->intervalos[1].i2 - almacen[0]->intervalos[1].i1);
+        // Si el perimetro es menor que el comparador
         if(distancia_x*2 + distancia_y*2 < perimetro_minimo){
+            // redefinir valores y las posibles entradas
             perimetro_minimo = distancia_x*2 + distancia_y*2;
             L->entradas = vector<Entrada*>(almacen.begin(), next(almacen.begin(), i));
 			LL->entradas = vector<Entrada*>(next(almacen.begin(), i), almacen.end());
         }
     }
+    // Ordenar por y
     sort(almacen.begin(), almacen.end(), comparar_y);
     for(int i = m; i<=M-m+1; i++){
+        // Obtener perimetros
         int distancia_x = abs(almacen[M]->intervalos[0].i2 - almacen[i]->intervalos[0].i1) + abs(almacen[i-1]->intervalos[0].i2 - almacen[0]->intervalos[0].i1);
         int distancia_y = abs(almacen[M]->intervalos[1].i2 - almacen[i]->intervalos[1].i1) + abs(almacen[i-1]->intervalos[1].i2 - almacen[0]->intervalos[1].i1);
+        // Si el perimetro es menor que el comparador
         if(distancia_x*2 + distancia_y*2 < perimetro_minimo){
+            // redefinir valores y las posibles entradas
             perimetro_minimo = distancia_x*2 + distancia_y*2;
             L->entradas = vector<Entrada*>(almacen.begin(), next(almacen.begin(), i));
 			LL->entradas = vector<Entrada*>(next(almacen.begin(), i), almacen.end());
         }
     }
     
+    // En caso sea un nodo interno, tenemos que redefinir sus hijos nodos a sus nuevos padres
     if(!L->hoja){
         for(int i = 0; i<L->entradas.size(); i++)
             dynamic_cast<Entrada_Interna*>(L->entradas[i])->puntero_hijo->padre = L;
         for(int i = 0; i<LL->entradas.size(); i++)
             dynamic_cast<Entrada_Interna*>(LL->entradas[i])->puntero_hijo->padre = LL;
     }
+
+    // Los entradas hoja no tienen padre
+    // retornar nodo nuevo de partición
     return LL;
 }
 
 Nodo *Arbol_R::escoger_hoja(Entrada_Hoja *E) {
     // CL1
+    // Empezar por la raiz
     Nodo* N = this->raiz;
     // CL2
+    // Mientras no se encuentre un nodo hoja
     while(!N->hoja){
         // CL3
         Entrada *F = N->entradas[0];
         int minima_area = 1;
         minima_area *= max(N->entradas[0]->intervalos[0].i2, E->intervalos[0].i2) - min(N->entradas[0]->intervalos[0].i1, E->intervalos[0].i1);
         minima_area *= max(N->entradas[0]->intervalos[1].i2, E->intervalos[1].i2) - min(N->entradas[0]->intervalos[1].i1, E->intervalos[1].i1);
+        // Hallar la entrada cuya expansión si fuese intertada la entrada, incremente menos
         for(int i = 1; i<N->entradas.size(); i++){
             int minima_area_local = 1;
             minima_area_local *= max(N->entradas[i]->intervalos[0].i2, E->intervalos[0].i2) - min(N->entradas[i]->intervalos[0].i1, E->intervalos[0].i1);
@@ -105,6 +136,7 @@ Nodo *Arbol_R::escoger_hoja(Entrada_Hoja *E) {
             }
         }
         // CL4
+        // bajar el hijo del mejor nodo
         N = dynamic_cast<Entrada_Interna*>(F)->puntero_hijo;
     }
     return N;
@@ -164,8 +196,9 @@ Nodo* Arbol_R::hallar_hoja(Nodo* E, Punto P){
     return nullptr;
 }
 
-// Actualizar superiores
+// CONDENSACION DEPRECADA
 void Arbol_R::condensar(Nodo* &H, deque<Nodo*> &NE){
+
     if (H != raiz)
     {
         // CT3 eliminar el nodo si tiene menos de m entradas
