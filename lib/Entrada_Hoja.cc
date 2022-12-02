@@ -6,6 +6,7 @@ Entrada_Hoja::Entrada_Hoja() = default;
 
 Entrada_Hoja::Entrada_Hoja(const vector<Punto> &t): tuplas(t){
 
+    // Actualizar los valores del intervalo 
     intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
     intervalos[1] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
 
@@ -17,6 +18,7 @@ Entrada_Hoja::Entrada_Hoja(const vector<Punto> &t): tuplas(t){
     }
 }
 
+// FUNCION DEPRECADA
 bool Entrada_Hoja::dentro(Punto P){
     Punto extremo{numeric_limits<int>::max() / 2, P.y};
     int disminuir{};
@@ -48,6 +50,8 @@ bool Entrada_Hoja::enSegmento(Punto a, Punto x, Punto b){
             return true;
     return false;
 }
+
+// FUNCION DEPRECADA
 Entrada_Hoja::orientacion_t Entrada_Hoja::orientacion(Punto a, Punto x, Punto b){
     int valor = (x.y - a.y) * (b.y - x.y) - (x.x - a.x) * (b.x - x.x);
     if (!valor)
@@ -56,6 +60,8 @@ Entrada_Hoja::orientacion_t Entrada_Hoja::orientacion(Punto a, Punto x, Punto b)
         return horario;
     return antihorario;
 }
+
+// FUNCION DEPRECADA
 bool Entrada_Hoja::intersecta(Punto a1, Punto a2, Punto b1, Punto b2){
     orientacion_t or1 = orientacion(a1, a2, b1);
     orientacion_t or2 = orientacion(a1, a2, b2);

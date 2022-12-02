@@ -111,18 +111,23 @@ Nodo *Arbol_R::escoger_hoja(Entrada_Hoja *E) {
 }
 
 bool operator<(const Arbol_R::Distante &pd1, const Arbol_R::Distante &pd2){
+    // Comparar < por distancia
     return pd1.distancia < pd2.distancia;
 }
 bool operator>(const Arbol_R::Distante &pd1, const Arbol_R::Distante &pd2){
+    // Comparar > por distancia
     return pd1.distancia>pd2.distancia;
 }
 bool operator<=(const Arbol_R::Distante &pd1, const Arbol_R::Distante &pd2){
+    // Comparar <= por distancia
     return pd1.distancia<=pd2.distancia;
 }
 bool operator>=(const Arbol_R::Distante &pd1, const Arbol_R::Distante &pd2){
+    // Comparar >= por distancia
     return pd1.distancia>=pd2.distancia;
 }
 
+// FUNCION DEPRECADA
 Nodo* Arbol_R::hallar_hoja(Nodo* E, Punto P){
     if (E->hoja)
     {
@@ -159,6 +164,7 @@ Nodo* Arbol_R::hallar_hoja(Nodo* E, Punto P){
     return nullptr;
 }
 
+// Actualizar superiores
 void Arbol_R::condensar(Nodo* &H, deque<Nodo*> &NE){
     if (H != raiz)
     {
@@ -217,13 +223,18 @@ void Arbol_R::condensar(Nodo* &H, deque<Nodo*> &NE){
 
 void Arbol_R::condensar_cercano(Nodo* L){
     // CT1
+    // Incio, nodo hoja
     Nodo* N = L;
+    // Vector de nodos eliminados
     vector<Nodo*> Q;
     // CT2
     while(N != raiz){
+        // Padre de N
         Nodo* P = N->padre;
         int E_N;
+        // Determinar si el nodo es eliminado
         bool eliminado = false;
+        // Hallar al entrada que contiene al nodo
         for(int i = 0; i<P->entradas.size(); i++){
             if(dynamic_cast<Entrada_Interna*>(P->entradas[i])->puntero_hijo == N){
                 E_N = i;
@@ -231,13 +242,18 @@ void Arbol_R::condensar_cercano(Nodo* L){
             }
         }
         // CT3
+        // Si hay underflow
         if(N->entradas.size() < m){
+            // eliminar el nood
             P->entradas.erase(next(P->entradas.begin(), E_N));
             eliminado = true;
+            // Agregarlo a Q
             Q.push_back(N);
         }
         // CT4
+        // Si hubo eliminaciones
         if(!eliminado){
+            // Actualizar intervalor
             P->entradas[E_N]->intervalos[0] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
             P->entradas[E_N]->intervalos[1] = {numeric_limits<int>::max(), numeric_limits<int>::min()};
             for(Entrada *e: N->entradas){
@@ -248,22 +264,27 @@ void Arbol_R::condensar_cercano(Nodo* L){
             }
         }
         // CT5
+        // Subir al padre
         N = P;
     }
     // CT6
     for(int i = 0; i<Q.size(); i++){
+        // Reinsertar todo lo eliminado
         insercion_recursiva(Q[i]);
     }
 }
 
+// Reinsertar todas las entradas del nodo
 void Arbol_R::insercion_recursiva(Nodo* N){
     if(N->hoja){
+        // Si es hoja, solamente insertar al arbol
         for(auto *e: N->entradas){
             this->insertar(dynamic_cast<Entrada_Hoja*>(e)->tuplas);
         }
     }
     else{
         for(auto *e: N->entradas){
+            // Si no es hoja, descender e nivel y llamar a la función
             this->insercion_recursiva(dynamic_cast<Entrada_Interna*>(e)->puntero_hijo);
         }
     }

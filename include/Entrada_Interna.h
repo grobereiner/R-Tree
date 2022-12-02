@@ -6,9 +6,11 @@
 
 struct Nodo;
 
+// Herencia para nodos internos
 struct Entrada_Interna: public Entrada{
     Entrada_Interna();
     ~Entrada_Interna() override;
+    // Puntro a nodo hijo
     Nodo* puntero_hijo;
 };
 
